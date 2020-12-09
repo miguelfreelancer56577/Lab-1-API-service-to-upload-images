@@ -17,13 +17,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.github.mangelt.lab1.domain.FieldError;
 import com.github.mangelt.lab1.domain.ReponseBodyPayload;
+import com.github.mangelt.lab1.exception.AppValidationException;
 import com.github.mangelt.lab1.util.ApiConstants;
 
 @ControllerAdvice
 public class ExceptionValidatorController extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(value = {ConstraintViolationException.class})
-	ResponseEntity<Object> handleValidationExceptions(
+	ResponseEntity<Object> handleValidationPayloadExceptions(
       RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, ReponseBodyPayload
         		.builder()
@@ -33,6 +34,18 @@ public class ExceptionValidatorController extends ResponseEntityExceptionHandler
         		.build(), 
           new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
+	
+	@ExceptionHandler(value = {AppValidationException.class})
+	ResponseEntity<Object> handleValidationImageExceptions(
+			AppValidationException ex, WebRequest request) {
+		return handleExceptionInternal(ex, ReponseBodyPayload
+				.builder()
+				.status(HttpStatus.BAD_REQUEST.value())
+				.message(ApiConstants.EXP_VALIDATION_FIELDS)
+				.content(ex.getFields())
+				.build(), 
+				new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
 	
 	List<FieldError> getFields(RuntimeException ex){
 		final List<FieldError> fields = new ArrayList<>();
