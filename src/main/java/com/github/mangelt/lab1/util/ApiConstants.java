@@ -20,14 +20,16 @@ public class ApiConstants {
 	public static final String SIGN_COMMA = ",";
 	public static final String SIGN_COLON = ":";
 	public static final String SIGN_DOT = ".";
-	public static final String CARD_JPG = "jpeg";
+	public static final String CARD_JPG = "jpg";
 	
 //	exception messages 
 	public static final String EXP_VALIDATION_FIELDS = "Please verify the correctness of required fields.";
 	public static final String EXP_ERROR_READ_FILE = "There was an error to get content's file.";
+	public static final String EXP_ERROR_READ_AVAILABLE_IMAGES = "There was an error to list available images from storage.";
 	
 //	success messages 
 	public static final String MSG_OK_IMAGE_SAVE = "The image was stored successfully.";
+	public static final String MSG_OK_IMAGE_LIST = "The images were retrieved successfully from the storage.";
 	
 //	configuration values 
 	public static final Long RULE_MAX_IMAGE_SIZE = 1000000L;

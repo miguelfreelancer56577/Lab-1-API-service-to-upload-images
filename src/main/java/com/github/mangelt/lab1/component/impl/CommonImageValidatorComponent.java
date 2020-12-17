@@ -20,7 +20,7 @@ public class CommonImageValidatorComponent implements ImageValidator{
 		final List<FieldError> errors = new ArrayList<>();
 //		it must be of type JPG
 		Optional
-			.ofNullable(image.getImageFile().getContentType())
+			.ofNullable(image.getImageFile().getOriginalFilename())
 			.ifPresent(content->{
 				if(!content.toLowerCase().contains(ApiConstants.CARD_JPG)) {
 					errors.add(FieldError

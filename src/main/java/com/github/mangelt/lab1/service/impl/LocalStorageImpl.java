@@ -3,6 +3,10 @@ package com.github.mangelt.lab1.service.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.github.mangelt.lab1.component.ImageValidator;
 import com.github.mangelt.lab1.domain.FieldError;
 import com.github.mangelt.lab1.domain.ImageDetailsPayload;
+import com.github.mangelt.lab1.domain.ReponseBodyPayload;
 import com.github.mangelt.lab1.domain.ResponseBodyImage;
 import com.github.mangelt.lab1.exception.AppException;
 import com.github.mangelt.lab1.exception.AppValidationException;
@@ -38,8 +44,23 @@ public class LocalStorageImpl implements StorageService {
 	String path;
 	
 	@Override
-	public ResponseEntity<List<ResponseBodyImage>> listAvailableImages() {
-		return null;
+	public ResponseEntity<ReponseBodyPayload<List<ImageDetailsPayload>>> listAvailableImages() {
+		ReponseBodyPayload<List<ImageDetailsPayload>> response = new ReponseBodyPayload<>(HttpStatus.OK.value(), ApiConstants.MSG_OK_IMAGE_LIST);
+		List<ImageDetailsPayload> lstImages = new ArrayList<>(); 
+		response.setContent(lstImages);
+		try(DirectoryStream<Path> newDirectoryStream = Files.newDirectoryStream(Paths.get(path), path->FilenameUtils
+				.getExtension(path.toString()).equals(ApiConstants.CARD_JPG))) {
+			newDirectoryStream.forEach(file->lstImages.add(ImageDetailsPayload
+					.builder()
+					.imageName(FilenameUtils.getBaseName(file.toString()))
+					.format(FilenameUtils.getExtension(file.toString()))
+					.size(file.toFile().length())
+					.build()));
+		} catch (Exception e) {
+			log.error(ApiConstants.EXP_ERROR_READ_AVAILABLE_IMAGES, e);
+			throw new AppException(ApiConstants.EXP_ERROR_READ_AVAILABLE_IMAGES, e);
+		}
+		return ResponseEntity.ok(response);
 	}
 
 	@Override
@@ -53,6 +74,9 @@ public class LocalStorageImpl implements StorageService {
 				inputStream = imageFile.getInputStream();
 				file = new File(this.getFullPath(image));
 				FileUtils.copyInputStreamToFile(inputStream, file);
+//				sets available information of the stored image
+				image.setFormat(FilenameUtils.getExtension(image.getImageFile().getOriginalFilename()));
+				image.setSize(file.length());
 				response.setContent(image);
 				response.setMessage(ApiConstants.MSG_OK_IMAGE_SAVE);
 			} catch (IOException e) {
