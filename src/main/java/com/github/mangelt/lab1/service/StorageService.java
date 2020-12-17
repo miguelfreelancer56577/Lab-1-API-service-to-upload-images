@@ -8,11 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
 import com.github.mangelt.lab1.domain.ImageDetailsPayload;
+import com.github.mangelt.lab1.domain.ReponseBodyPayload;
 import com.github.mangelt.lab1.domain.ResponseBodyImage;
 
 @Validated
 public interface StorageService {
-	ResponseEntity<List<ResponseBodyImage>> listAvailableImages();
+	ResponseEntity<ReponseBodyPayload<List<ImageDetailsPayload>>> listAvailableImages();
 	ResponseEntity<ResponseBodyImage> saveImage(@Valid ImageDetailsPayload image);
 	boolean exists(@Valid ImageDetailsPayload image);
 	String getFullPath(@Valid ImageDetailsPayload image);
