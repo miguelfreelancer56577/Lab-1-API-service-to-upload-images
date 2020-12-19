@@ -1,6 +1,5 @@
 package com.github.mangelt.lab1.exception;
 
-import java.io.Serializable;
 import java.util.List;
 
 import com.github.mangelt.lab1.domain.FieldError;

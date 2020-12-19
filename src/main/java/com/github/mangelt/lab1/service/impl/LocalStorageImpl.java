@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +19,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -35,27 +39,36 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@Profile(ApiConstants.PROFILE_LOCAL)
 public class LocalStorageImpl implements StorageService {
 
 	@Autowired
 	ImageValidator imageValidator;
 	
-	@Value("#{'${app.config.image.protocol}'.concat('${app.config.image.directory}')}")
+	@Value(ApiConstants.APP_CONFIG_IMAGE_DIRECTORY)
 	String path;
 	
 	@Override
 	public ResponseEntity<ReponseBodyPayload<List<ImageDetailsPayload>>> listAvailableImages() {
-		ReponseBodyPayload<List<ImageDetailsPayload>> response = new ReponseBodyPayload<>(HttpStatus.OK.value(), ApiConstants.MSG_OK_IMAGE_LIST);
-		List<ImageDetailsPayload> lstImages = new ArrayList<>(); 
+		final ReponseBodyPayload<List<ImageDetailsPayload>> response = new ReponseBodyPayload<>(HttpStatus.OK.value(), ApiConstants.MSG_OK_IMAGE_LIST);
+		final List<ImageDetailsPayload> lstImages = new ArrayList<>(); 
 		response.setContent(lstImages);
 		try(DirectoryStream<Path> newDirectoryStream = Files.newDirectoryStream(Paths.get(path), path->FilenameUtils
 				.getExtension(path.toString()).equals(ApiConstants.CARD_JPG))) {
-			newDirectoryStream.forEach(file->lstImages.add(ImageDetailsPayload
-					.builder()
-					.imageName(FilenameUtils.getBaseName(file.toString()))
-					.format(FilenameUtils.getExtension(file.toString()))
-					.size(file.toFile().length())
-					.build()));
+			newDirectoryStream.forEach(file->{
+				try {
+					lstImages.add(ImageDetailsPayload
+							.builder()
+							.imageName(FilenameUtils.getBaseName(file.toString()))
+							.format(FilenameUtils.getExtension(file.toString()))
+							.size(file.toFile().length())
+							.uploadedDate(Files.readAttributes(file, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS).creationTime().toMillis())
+							.build());
+				} catch (IOException e) {
+					log.error(ApiConstants.EXP_ERROR_READ_METADATA_IMAGES.concat(ApiConstants.MSG_FORMAT_IMAGE_PATH), file);
+					throw new AppException(ApiConstants.EXP_ERROR_READ_METADATA_IMAGES, e);
+				}
+			});
 		} catch (Exception e) {
 			log.error(ApiConstants.EXP_ERROR_READ_AVAILABLE_IMAGES, e);
 			throw new AppException(ApiConstants.EXP_ERROR_READ_AVAILABLE_IMAGES, e);
@@ -65,6 +78,7 @@ public class LocalStorageImpl implements StorageService {
 
 	@Override
 	public ResponseEntity<ResponseBodyImage> saveImage(ImageDetailsPayload image) {
+		final Instant instant = Instant.now();
 		final ResponseBodyImage response = new ResponseBodyImage();
 		final InputStream inputStream;
 		final MultipartFile imageFile = image.getImageFile();
@@ -77,6 +91,7 @@ public class LocalStorageImpl implements StorageService {
 //				sets available information of the stored image
 				image.setFormat(FilenameUtils.getExtension(image.getImageFile().getOriginalFilename()));
 				image.setSize(file.length());
+				image.setUploadedDate(instant.toEpochMilli());
 				response.setContent(image);
 				response.setMessage(ApiConstants.MSG_OK_IMAGE_SAVE);
 			} catch (IOException e) {

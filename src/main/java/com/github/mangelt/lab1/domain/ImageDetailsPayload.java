@@ -23,4 +23,5 @@ public class ImageDetailsPayload {
 	MultipartFile imageFile;
 	String format;
 	Long size;
+	Long uploadedDate;
 }
