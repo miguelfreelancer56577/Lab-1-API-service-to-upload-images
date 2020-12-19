@@ -30,16 +30,18 @@ public class ApiConstants {
 	public static final String EXP_ERROR_READ_FILE = "There was an error to get content's file.";
 	public static final String EXP_ERROR_READ_AVAILABLE_IMAGES = "There was an error to list available images from storage.";
 	public static final String EXP_ERROR_READ_METADATA_IMAGES = "There was an error getting metadata from the image.";
-	public static final String EXP_ERROR_NOT_EXIST_BUCKET = "The bucket your trying to access does not exists.";
+	public static final String EXP_ERROR_NOT_EXIST_BUCKET = "The bucket you're trying to access does not exists.";
 	
 //	message format
 	public static final String MSG_FORMAT_ADDING_INFO = ": {}";
 	public static final String MSG_FORMAT_IMAGE_PATH = " IMAGE PATH {}.";
+	public static final String MSG_FORMAT_IMAGE_NOT_STORED = "Image isn't stored in the repository under this name: {}";
 	
 	
 //	success messages 
 	public static final String MSG_OK_IMAGE_SAVE = "The image was stored successfully.";
 	public static final String MSG_OK_IMAGE_LIST = "The images were retrieved successfully from the storage.";
+	public static final String MSG_OK_IMAGE_UNAVAILABLE = "there are no available images stored.";
 	
 //	configuration values 
 	public static final Long RULE_MAX_IMAGE_SIZE = 1000000L;
@@ -56,6 +58,7 @@ public class ApiConstants {
 	public static final String APP_CONFIG_IMAGE_AWS_BUCKET_NAME = "${app.config.image.aws.bucket-name}";
 	public static final String APP_CONFIG_IMAGE_AWS_ACCESSKEY = "${app.config.image.aws.accesskey}";
 	public static final String APP_CONFIG_IMAGE_AWS_SECRETKEY = "${app.config.image.aws.secretkey}";
+	public static final String APP_CONFIG_IMAGE_AWS_REGION = "${app.config.image.aws.region}";
 	
 	
 }

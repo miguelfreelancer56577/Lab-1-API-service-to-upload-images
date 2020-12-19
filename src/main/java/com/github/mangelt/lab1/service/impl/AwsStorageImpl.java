@@ -19,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -58,6 +60,7 @@ public class AwsStorageImpl implements StorageService {
 	public ResponseEntity<ReponseBodyPayload<List<ImageDetailsPayload>>> listAvailableImages() {
 		final ReponseBodyPayload<List<ImageDetailsPayload>> response = new ReponseBodyPayload<>(HttpStatus.OK.value(), ApiConstants.MSG_OK_IMAGE_LIST);
 		final List<ImageDetailsPayload> lstImages;
+		this.doesBucketExist();
 		final ObjectListing objects = client.listObjects(bucketName);
 		lstImages = objects
 			.getObjectSummaries()
@@ -72,6 +75,9 @@ public class AwsStorageImpl implements StorageService {
 					.uploadedDate(Long.parseLong(objMeta.getUserMetaDataOf(ApiConstants.REQ_PARAM_UPLOADED_DATE)))
 					.build())
 			.collect(Collectors.toList());
+		if(lstImages.isEmpty()) {
+			response.setMessage(ApiConstants.MSG_OK_IMAGE_UNAVAILABLE);
+		}
 		response.setContent(lstImages);
 		return ResponseEntity.ok(response);
 	}
@@ -84,6 +90,8 @@ public class AwsStorageImpl implements StorageService {
 		final MultipartFile imageFile = image.getImageFile();
 		final ObjectMetadata metadata = new ObjectMetadata();
 		final String format;
+//		check if the bucket exists 
+		this.doesBucketExist();
 		if(imageValidator.isValid(image) && !this.exists(image)) {
 			try {
 				format = FilenameUtils.getExtension(imageFile.getOriginalFilename());
@@ -114,17 +122,19 @@ public class AwsStorageImpl implements StorageService {
 	@Override
 	public boolean exists(ImageDetailsPayload image) {
 		final List<FieldError> errors;
-		S3Object s3object = client.getObject(bucketName, this.getFullPath(image));
-		String key = s3object.getKey();
-			if(!Objects.isNull(key)) {
-				errors = new ArrayList<>();
-				errors.add(FieldError
-						.builder()
-						.fieldName(ApiConstants.REQ_PARAM_IMAGE_NAME)
-						.fieldMessage(ApiConstants.IMAGE_SERVICE_FILE_IMAGE_ALREADY_REGISTERED)
-						.build());
-				throw new AppValidationException(errors);
-			}
+		try {
+//			check if the image is already registered in the bucket  
+			client.getObject(bucketName, this.getFullPath(image));
+			errors = new ArrayList<>();
+			errors.add(FieldError
+					.builder()
+					.fieldName(ApiConstants.REQ_PARAM_IMAGE_NAME)
+					.fieldMessage(ApiConstants.IMAGE_SERVICE_FILE_IMAGE_ALREADY_REGISTERED)
+					.build());
+			throw new AppValidationException(errors);
+		} catch (SdkClientException e) {
+			log.info(ApiConstants.MSG_FORMAT_IMAGE_NOT_STORED, image.getImageName());
+		}
 		return false;
 	}
 

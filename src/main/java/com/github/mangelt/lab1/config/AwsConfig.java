@@ -21,6 +21,8 @@ public class AwsConfig {
 	String accesskey;
 	@Value(ApiConstants.APP_CONFIG_IMAGE_AWS_SECRETKEY)
 	String secretkey;
+	@Value(ApiConstants.APP_CONFIG_IMAGE_AWS_REGION)
+	String region;
 	
 	@Bean
 	AWSCredentials awsCredencials() {
@@ -32,8 +34,7 @@ public class AwsConfig {
 		return AmazonS3ClientBuilder
 				  .standard()
 				  .withCredentials(new AWSStaticCredentialsProvider(credentials))
-				  //TODO: check the region of my own service
-				  .withRegion(Regions.US_EAST_2)
+				  .withRegion(Regions.valueOf(region))
 				  .build();
 	}
 }
