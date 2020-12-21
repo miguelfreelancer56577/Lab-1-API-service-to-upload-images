@@ -15,7 +15,7 @@ import com.github.mangelt.lab1.util.ApiConstants;
 
 @Configuration
 @Profile(ApiConstants.PROFILE_AWS)
-public class AwsConfig {
+public class AwsS3Config {
 	
 	@Value(ApiConstants.APP_CONFIG_IMAGE_AWS_ACCESSKEY)
 	String accesskey;

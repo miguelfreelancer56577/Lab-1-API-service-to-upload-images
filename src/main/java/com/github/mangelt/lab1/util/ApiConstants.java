@@ -31,11 +31,13 @@ public class ApiConstants {
 	public static final String EXP_ERROR_READ_AVAILABLE_IMAGES = "There was an error to list available images from storage.";
 	public static final String EXP_ERROR_READ_METADATA_IMAGES = "There was an error getting metadata from the image.";
 	public static final String EXP_ERROR_NOT_EXIST_BUCKET = "The bucket you're trying to access does not exists.";
+	public static final String EXP_ERROR_STORAGE_UNAVAILABLE = "The storage service is unavailable.";
 	
 //	message format
 	public static final String MSG_FORMAT_ADDING_INFO = ": {}";
 	public static final String MSG_FORMAT_IMAGE_PATH = " IMAGE PATH {}.";
 	public static final String MSG_FORMAT_IMAGE_NOT_STORED = "Image isn't stored in the repository under this name: {}";
+	public static final String MSG_FORMAT_IMAGE_UNEXPECTED_ERROR = "There was an unexpected error";
 	
 	
 //	success messages 
@@ -48,6 +50,7 @@ public class ApiConstants {
 	
 //	spring profiles
 	public static final String PROFILE_AWS = "aws";
+	public static final String PROFILE_AZURE = "azure";
 	public static final String PROFILE_LOCAL = "local";
 	
 //	bean names
