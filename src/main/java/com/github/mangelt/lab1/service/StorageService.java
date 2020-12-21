@@ -15,6 +15,6 @@ import com.github.mangelt.lab1.domain.ResponseBodyImage;
 public interface StorageService {
 	ResponseEntity<ReponseBodyPayload<List<ImageDetailsPayload>>> listAvailableImages();
 	ResponseEntity<ResponseBodyImage> saveImage(@Valid ImageDetailsPayload image);
-	boolean exists(@Valid ImageDetailsPayload image);
-	String getFullPath(@Valid ImageDetailsPayload image);
+	boolean doesImageExist(@Valid ImageDetailsPayload image);
+	String pathToImage(@Valid ImageDetailsPayload image);
 }

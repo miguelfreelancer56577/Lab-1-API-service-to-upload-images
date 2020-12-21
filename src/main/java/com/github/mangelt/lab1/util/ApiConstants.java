@@ -32,6 +32,7 @@ public class ApiConstants {
 	public static final String EXP_ERROR_READ_METADATA_IMAGES = "There was an error getting metadata from the image.";
 	public static final String EXP_ERROR_NOT_EXIST_BUCKET = "The bucket you're trying to access does not exists.";
 	public static final String EXP_ERROR_STORAGE_UNAVAILABLE = "The storage service is unavailable.";
+	public static final String EXP_ERROR_CREATE_DIR = "There was an error to create directory in your file system.";
 	
 //	message format
 	public static final String MSG_FORMAT_ADDING_INFO = ": {}";

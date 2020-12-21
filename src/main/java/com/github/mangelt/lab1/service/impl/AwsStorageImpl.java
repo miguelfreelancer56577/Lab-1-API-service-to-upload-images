@@ -60,7 +60,7 @@ public class AwsStorageImpl implements StorageService {
 	public ResponseEntity<ReponseBodyPayload<List<ImageDetailsPayload>>> listAvailableImages() {
 		final ReponseBodyPayload<List<ImageDetailsPayload>> response = new ReponseBodyPayload<>(HttpStatus.OK.value(), ApiConstants.MSG_OK_IMAGE_LIST);
 		final List<ImageDetailsPayload> lstImages;
-		this.doesBucketExist();
+		imageValidator.checkStorage();
 		final ObjectListing objects = client.listObjects(bucketName);
 		lstImages = objects
 			.getObjectSummaries()
@@ -90,10 +90,10 @@ public class AwsStorageImpl implements StorageService {
 		final MultipartFile imageFile = image.getImageFile();
 		final ObjectMetadata metadata = new ObjectMetadata();
 		final String format;
-//		check if the bucket exists 
-		this.doesBucketExist();
-		if(imageValidator.isValid(image) && !this.exists(image)) {
-			try {
+//		check if it's a valid image
+		imageValidator.checkImage(image);
+		try {
+			if(!this.doesImageExist(image)) {
 				format = FilenameUtils.getExtension(imageFile.getOriginalFilename());
 //				get stream of data 
 				inputStream = imageFile.getInputStream();
@@ -104,27 +104,27 @@ public class AwsStorageImpl implements StorageService {
 				metadata.addUserMetadata(ApiConstants.REQ_PARAM_IMAGE_FORMAT, format);
 				metadata.addUserMetadata(ApiConstants.REQ_PARAM_IMAGE_SIZE, Long.toString(imageFile.getSize()));
 //				upload image to bucket
-				client.putObject(bucketName, this.getFullPath(image), inputStream, metadata);
+				client.putObject(bucketName, this.pathToImage(image), inputStream, metadata);
 //				sets available information of the stored image
 				image.setFormat(format);
 				image.setSize(imageFile.getSize());
 				image.setUploadedDate(instant.toEpochMilli());
 				response.setContent(image);
 				response.setMessage(ApiConstants.MSG_OK_IMAGE_SAVE);
-			} catch (IOException e) {
-				log.error(ApiConstants.EXP_ERROR_READ_FILE, e);
-				throw new AppException(ApiConstants.EXP_ERROR_READ_FILE, e);
 			}
+		} catch (IOException e) {
+			log.error(ApiConstants.EXP_ERROR_READ_FILE, e);
+			throw new AppException(ApiConstants.EXP_ERROR_READ_FILE, e);
 		}
 		return ResponseEntity.ok(response);
 	}
 
 	@Override
-	public boolean exists(ImageDetailsPayload image) {
+	public boolean doesImageExist(ImageDetailsPayload image) {
 		final List<FieldError> errors;
 		try {
 //			check if the image is already registered in the bucket  
-			client.getObject(bucketName, this.getFullPath(image));
+			client.getObject(bucketName, this.pathToImage(image));
 			errors = new ArrayList<>();
 			errors.add(FieldError
 					.builder()
@@ -139,17 +139,10 @@ public class AwsStorageImpl implements StorageService {
 	}
 
 	@Override
-	public String getFullPath(ImageDetailsPayload image) {
+	public String pathToImage(ImageDetailsPayload image) {
 		return image.getImageName()
 				.concat(ApiConstants.SIGN_DOT)
 				.concat(FilenameUtils.getExtension(image.getImageFile().getOriginalFilename()));
-	}
-	
-	void doesBucketExist() {
-		if(!client.doesBucketExist(bucketName)) {
-			log.error(ApiConstants.EXP_ERROR_NOT_EXIST_BUCKET.concat(ApiConstants.MSG_FORMAT_ADDING_INFO), bucketName);
-			throw new AppException(ApiConstants.EXP_ERROR_NOT_EXIST_BUCKET, null);
-		}
 	}
 
 }
