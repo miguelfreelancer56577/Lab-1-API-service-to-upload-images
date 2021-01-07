@@ -57,7 +57,7 @@ public class AzureStorageImpl implements StorageService {
 		final List<ImageDetailsPayload> lstImages;
 		final List<BlobItem> lstItems;
 		
-		this.doesContainerExist();
+		imageValidator.checkStorage();
 		lstItems = StreamSupport
 				.stream(blobContainer.listBlobs().spliterator(), false)
 				.collect(Collectors.toList());
@@ -89,10 +89,10 @@ public class AzureStorageImpl implements StorageService {
 		final Map<String, String> metadata = new HashMap<>();
 		final String format;
 		final BlobClient blobClient;
-//		check if the bucket exists 
-		this.doesContainerExist();
-		if(imageValidator.isValid(image) && !this.exists(image)) {
-			try {
+//		check if it's a valid image 
+		imageValidator.checkImage(image);
+		try {
+			if(!this.doesImageExist(image)) {
 				format = FilenameUtils.getExtension(imageFile.getOriginalFilename());
 //				get stream of data 
 				inputStream = imageFile.getInputStream();
@@ -101,7 +101,7 @@ public class AzureStorageImpl implements StorageService {
 				metadata.put(ApiConstants.REQ_PARAM_UPLOADED_DATE, Long.toString(instant.toEpochMilli()));
 				metadata.put(ApiConstants.REQ_PARAM_IMAGE_FORMAT, format);
 				metadata.put(ApiConstants.REQ_PARAM_IMAGE_SIZE, Long.toString(imageFile.getSize()));
-				blobClient = blobContainer.getBlobClient(this.getFullPath(image));
+				blobClient = blobContainer.getBlobClient(this.pathToImage(image));
 //				upload image to bucket
 				blobClient.upload(inputStream, imageFile.getSize());
 				blobClient.setMetadata(metadata);
@@ -111,19 +111,19 @@ public class AzureStorageImpl implements StorageService {
 				image.setUploadedDate(instant.toEpochMilli());
 				response.setContent(image);
 				response.setMessage(ApiConstants.MSG_OK_IMAGE_SAVE);
-			} catch (IOException e) {
-				log.error(ApiConstants.EXP_ERROR_READ_FILE, e);
-				throw new AppException(ApiConstants.EXP_ERROR_READ_FILE, e);
 			}
+		} catch (IOException e) {
+			log.error(ApiConstants.EXP_ERROR_READ_FILE, e);
+			throw new AppException(ApiConstants.EXP_ERROR_READ_FILE, e);
 		}
 		return ResponseEntity.ok(response);
 	}
 
 	@Override
-	public boolean exists(ImageDetailsPayload image) {
+	public boolean doesImageExist(ImageDetailsPayload image) {
 		final List<FieldError> errors;
 		final BlobClient blobClient;
-			blobClient = blobContainer.getBlobClient(this.getFullPath(image));
+			blobClient = blobContainer.getBlobClient(this.pathToImage(image));
 			if(blobClient.exists().booleanValue()) {
 				errors = new ArrayList<>();
 				errors.add(FieldError
@@ -137,17 +137,10 @@ public class AzureStorageImpl implements StorageService {
 	}
 
 	@Override
-	public String getFullPath(ImageDetailsPayload image) {
+	public String pathToImage(ImageDetailsPayload image) {
 		return image.getImageName()
 				.concat(ApiConstants.SIGN_DOT)
 				.concat(FilenameUtils.getExtension(image.getImageFile().getOriginalFilename()));
 	}
 	
-	void doesContainerExist() {
-		if(!blobContainer.exists()) {
-			log.error(ApiConstants.EXP_ERROR_NOT_EXIST_BUCKET.concat(ApiConstants.MSG_FORMAT_ADDING_INFO), containerName);
-			throw new AppException(ApiConstants.EXP_ERROR_NOT_EXIST_BUCKET, null);
-		}
-	}
-
 }

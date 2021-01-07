@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.github.mangelt.lab1.component.ImageValidator;
@@ -13,10 +14,11 @@ import com.github.mangelt.lab1.exception.AppValidationException;
 import com.github.mangelt.lab1.util.ApiConstants;
 
 @Component
-public class CommonImageValidatorComponent implements ImageValidator{
+@Profile(value = ApiConstants.PROFILE_LOCAL)
+public abstract class BaseImageValidatorComponent implements ImageValidator{
 
 	@Override
-	public boolean isValid(ImageDetailsPayload image) {
+	public void checkImage(ImageDetailsPayload image) {
 		final List<FieldError> errors = new ArrayList<>();
 //		it must be of type JPG
 		Optional
@@ -48,7 +50,9 @@ public class CommonImageValidatorComponent implements ImageValidator{
 			throw new AppValidationException(errors);
 		}
 		
-		return true;
+//		check if storage is present
+		this.checkStorage();
+		
 	}
-
+	
 }

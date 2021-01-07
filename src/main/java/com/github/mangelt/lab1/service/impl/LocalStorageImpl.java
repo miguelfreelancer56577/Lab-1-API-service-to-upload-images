@@ -53,6 +53,8 @@ public class LocalStorageImpl implements StorageService {
 		final ReponseBodyPayload<List<ImageDetailsPayload>> response = new ReponseBodyPayload<>(HttpStatus.OK.value(), ApiConstants.MSG_OK_IMAGE_LIST);
 		final List<ImageDetailsPayload> lstImages = new ArrayList<>(); 
 		response.setContent(lstImages);
+//		check if directory already exist
+		imageValidator.checkStorage();
 		try(DirectoryStream<Path> newDirectoryStream = Files.newDirectoryStream(Paths.get(path), path->FilenameUtils
 				.getExtension(path.toString()).equals(ApiConstants.CARD_JPG))) {
 			newDirectoryStream.forEach(file->{
@@ -83,10 +85,12 @@ public class LocalStorageImpl implements StorageService {
 		final InputStream inputStream;
 		final MultipartFile imageFile = image.getImageFile();
 		final File file;
-		if(imageValidator.isValid(image) && !this.exists(image)) {
-			try {
+//		check if it's a valid image
+		imageValidator.checkImage(image);
+		try {
+			if(!this.doesImageExist(image)) {
 				inputStream = imageFile.getInputStream();
-				file = new File(this.getFullPath(image));
+				file = new File(this.pathToImage(image));
 				FileUtils.copyInputStreamToFile(inputStream, file);
 //				sets available information of the stored image
 				image.setFormat(FilenameUtils.getExtension(image.getImageFile().getOriginalFilename()));
@@ -94,19 +98,19 @@ public class LocalStorageImpl implements StorageService {
 				image.setUploadedDate(instant.toEpochMilli());
 				response.setContent(image);
 				response.setMessage(ApiConstants.MSG_OK_IMAGE_SAVE);
-			} catch (IOException e) {
-				log.error(ApiConstants.EXP_ERROR_READ_FILE, e);
-				throw new AppException(ApiConstants.EXP_ERROR_READ_FILE, e);
 			}
+		} catch (IOException e) {
+			log.error(ApiConstants.EXP_ERROR_READ_FILE, e);
+			throw new AppException(ApiConstants.EXP_ERROR_READ_FILE, e);
 		}
 		return ResponseEntity.ok(response);
 	}
 
 	@Override
-	public boolean exists(ImageDetailsPayload image) {
+	public boolean doesImageExist(ImageDetailsPayload image) {
 		final List<FieldError> errors;
 //		Image must not be registered with the same name
-		final File file = new File(this.getFullPath(image));
+		final File file = new File(this.pathToImage(image));
 		if(file.exists()) {
 			errors = new ArrayList<>();
 			errors.add(FieldError
@@ -120,7 +124,7 @@ public class LocalStorageImpl implements StorageService {
 	}
 
 	@Override
-	public String getFullPath(ImageDetailsPayload image) {
+	public String pathToImage(ImageDetailsPayload image) {
 		return path
 				.concat(image.getImageName())
 				.concat(ApiConstants.SIGN_DOT)
