@@ -11,8 +11,11 @@ import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.github.mangelt.lab1.util.ApiConstants;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Configuration
 @Profile(ApiConstants.PROFILE_AZURE)
+@Slf4j
 public class AzureBlobStorageConfig {
 	
 	@Value("${azure.storage.connection.string}")
@@ -25,13 +28,15 @@ public class AzureBlobStorageConfig {
 	protected BlobServiceClient storageClient()
 	{
 //			return a new client to use blob storage
-			return new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
+		log.info("Setting up azure storage client.");
+		return new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
 	}
 	
 	@Bean
 	@ConditionalOnClass(value = {BlobServiceClient.class})
 	protected BlobContainerClient  blobContainer(BlobServiceClient storageClient)
 	{
+		log.info("Setting up azure blob client.");
 		return storageClient.getBlobContainerClient(containerName);
 	}
 }
