@@ -15,10 +15,14 @@ phases:
       - mvn package
   post_build:
     commands:
-      # Move source files to root directory
+      # Replace cardholders of aws configuration.
+      - sed -i.bak 's/\$APP_CONFIG_IMAGE_AWS_ACCESSKEY\$/'${APP_CONFIG_IMAGE_AWS_ACCESSKEY}'/g;s/\$APP_CONFIG_IMAGE_AWS_SECRETKEY\$/'${APP_CONFIG_IMAGE_AWS_SECRETKEY}'/g;s/\$PROFILE_ACTIVE\$/'${PROFILE_ACTIVE}'/g' src/main/resources/aws-config/scripts/start_app
+      # Move source files to root directory.
       - cp src/main/resources/aws-config/template.yml ./template.yml  
+      - cp src/main/resources/aws-config/scripts ./scripts  
       - cp target/lab1-0.0.1-SNAPSHOT.jar ./lab1.jar  
 artifacts:
   files:
     - lab1.jar
     - template.yml
+    - scripts/*
