@@ -1,0 +1,14 @@
+version: 0.0
+os: linux
+files:
+- source: lab1.jar
+  destination: /home/ec2-user/javaapp
+hooks:
+  AfterInstall:
+  - location: scripts/install_java
+    timeout: 300
+    runas: root
+  ApplicationStart:
+  - location: scripts/start_app
+    timeout: 300
+    runas: root

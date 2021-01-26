@@ -1,0 +1,5 @@
+#!/bin/bash
+java -jar -Dapp.config.image.aws.accesskey=$APP_CONFIG_IMAGE_AWS_ACCESSKEY$ \
+-Dapp.config.image.aws.secretkey=$APP_CONFIG_IMAGE_AWS_SECRETKEY$ \
+-Dspring.profiles.active=$PROFILE_ACTIVE$ \
+/home/ec2-user/javaapp/lab1.jar
