@@ -7,16 +7,18 @@ phases:
     commands:
       # Upgrade AWS CLI to the latest version
       - pip install --upgrade awscli
-  pre_build:
-    commands:
-      - mvn clean compile test
   build:
     commands:
-      - mvn package
+      - mvn clean package
   post_build:
     commands:
-      # Replace cardholders of aws configuration.
-      - sed -i.bak 's/\$APP_CONFIG_IMAGE_AWS_ACCESSKEY\$/'${APP_CONFIG_IMAGE_AWS_ACCESSKEY}'/g;s/\$APP_CONFIG_IMAGE_AWS_SECRETKEY\$/'${APP_CONFIG_IMAGE_AWS_SECRETKEY}'/g;s/\$PROFILE_ACTIVE\$/'${PROFILE_ACTIVE}'/g;s/\$AZURE_STORAGE_CONNECTION_STRING\$/'${AZURE_STORAGE_CONNECTION_STRING}'/g' src/main/resources/aws-config/scripts/start_app
+      # create start_app file
+      - echo "#!/bin/bash" >> src/main/resources/aws-config/scripts/start_app
+      - echo "export APP_CONFIG_IMAGE_AWS_ACCESSKEY='${APP_CONFIG_IMAGE_AWS_ACCESSKEY}'" >> src/main/resources/aws-config/scripts/start_app
+      - echo "export APP_CONFIG_IMAGE_AWS_SECRETKEY='${APP_CONFIG_IMAGE_AWS_SECRETKEY}'" >> src/main/resources/aws-config/scripts/start_app
+      - echo "export AZURE_STORAGE_CONNECTION_STRING='${AZURE_STORAGE_CONNECTION_STRING}'" >> src/main/resources/aws-config/scripts/start_app
+      - echo "export SPRING_PROFILES_ACTIVE='${PROFILE_ACTIVE}'" >> src/main/resources/aws-config/scripts/start_app
+      - echo "java -jar /home/ec2-user/javaapp/lab1.jar" >> src/main/resources/aws-config/scripts/start_app
       # Move source files to root directory.
       - cp src/main/resources/aws-config/template.yml ./template.yml  
       - cp src/main/resources/aws-config/appspec.yml ./appspec.yml  
