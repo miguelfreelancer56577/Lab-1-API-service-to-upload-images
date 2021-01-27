@@ -1,7 +1,0 @@
-#!/bin/bash
-java -jar -Dapp.config.image.aws.accesskey=$APP_CONFIG_IMAGE_AWS_ACCESSKEY$ \
--Dapp.config.image.aws.secretkey=$APP_CONFIG_IMAGE_AWS_SECRETKEY$ \
--Dapp.config.image.aws.secretkey=$APP_CONFIG_IMAGE_AWS_SECRETKEY$ \
--Dspring.profiles.active=$PROFILE_ACTIVE$ \
--Dazure.storage.container.name=$AZURE_STORAGE_CONNECTION_STRING$ \
-/home/ec2-user/javaapp/lab1.jar
