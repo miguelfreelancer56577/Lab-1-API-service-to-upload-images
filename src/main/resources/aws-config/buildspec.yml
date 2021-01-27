@@ -18,7 +18,10 @@ phases:
       - echo "export APP_CONFIG_IMAGE_AWS_SECRETKEY='${APP_CONFIG_IMAGE_AWS_SECRETKEY}'" >> src/main/resources/aws-config/scripts/start_app
       - echo "export AZURE_STORAGE_CONNECTION_STRING='${AZURE_STORAGE_CONNECTION_STRING}'" >> src/main/resources/aws-config/scripts/start_app
       - echo "export SPRING_PROFILES_ACTIVE='${PROFILE_ACTIVE}'" >> src/main/resources/aws-config/scripts/start_app
-      - echo "java -jar /home/ec2-user/javaapp/lab1.jar" >> src/main/resources/aws-config/scripts/start_app
+      - echo "touch /home/ec2-user/javaapp/lab1.log /home/ec2-user/javaapp/pid.file" >> src/main/resources/aws-config/scripts/start_app
+      - echo "chmod 777 /home/ec2-user/javaapp/lab1.log /home/ec2-user/javaapp/pid.file" >> src/main/resources/aws-config/scripts/start_app
+      - echo "nohup java -jar /home/ec2-user/javaapp/lab1.jar > /home/ec2-user/javaapp/lab1.log 2>&1 &" >> src/main/resources/aws-config/scripts/start_app
+      - echo "echo $! > /home/ec2-user/javaapp/pid.file" >> src/main/resources/aws-config/scripts/start_app
       # Move source files to root directory.
       - cp src/main/resources/aws-config/template.yml ./template.yml  
       - cp src/main/resources/aws-config/appspec.yml ./appspec.yml  
