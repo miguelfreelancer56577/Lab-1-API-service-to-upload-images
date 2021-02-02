@@ -1,3 +1,10 @@
 #!/bin/bash
-# kill the application
-killall java
+pidLine="$( ps aux | grep java | grep lab1 | cut -d ' ' -f 3 )"
+if [ ${#pidLine} -gt 0 ]; then
+	echo "Killing process." 
+    kill $pidLine
+    outCode=$?
+    if [ ${outCode} -eq 0 ]; then
+    	echo "The process was killed successfully."
+    fi
+fi
