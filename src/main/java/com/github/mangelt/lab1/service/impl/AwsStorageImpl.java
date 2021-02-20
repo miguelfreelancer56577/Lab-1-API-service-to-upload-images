@@ -25,6 +25,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
+import com.github.mangelt.lab1.annotation.PerformanceStorageLogger;
 import com.github.mangelt.lab1.component.ImageValidator;
 import com.github.mangelt.lab1.domain.FieldError;
 import com.github.mangelt.lab1.domain.ImageDetailsPayload;
@@ -57,11 +58,13 @@ public class AwsStorageImpl implements StorageService {
 	AmazonS3 client;
 	
 	@Override
+	@PerformanceStorageLogger
 	public ResponseEntity<ReponseBodyPayload<List<ImageDetailsPayload>>> listAvailableImages() {
 		final ReponseBodyPayload<List<ImageDetailsPayload>> response = new ReponseBodyPayload<>(HttpStatus.OK.value(), ApiConstants.MSG_OK_IMAGE_LIST);
 		final List<ImageDetailsPayload> lstImages;
 		imageValidator.checkStorage();
 		final ObjectListing objects = client.listObjects(bucketName);
+		log.debug("ObjectListing: {}", objects);
 		lstImages = objects
 			.getObjectSummaries()
 			.stream()
@@ -75,14 +78,18 @@ public class AwsStorageImpl implements StorageService {
 					.uploadedDate(Long.parseLong(objMeta.getUserMetaDataOf(ApiConstants.REQ_PARAM_UPLOADED_DATE)))
 					.build())
 			.collect(Collectors.toList());
+		log.debug("lstImages: {}", lstImages);
 		if(lstImages.isEmpty()) {
+			log.debug(ApiConstants.MSG_OK_IMAGE_UNAVAILABLE);
 			response.setMessage(ApiConstants.MSG_OK_IMAGE_UNAVAILABLE);
 		}
 		response.setContent(lstImages);
+		log.debug("response: {}", response);
 		return ResponseEntity.ok(response);
 	}
 
 	@Override
+	@PerformanceStorageLogger
 	public ResponseEntity<ResponseBodyImage> saveImage(ImageDetailsPayload image) {
 		final Instant instant = Instant.now();
 		final ResponseBodyImage response = new ResponseBodyImage();
@@ -120,6 +127,7 @@ public class AwsStorageImpl implements StorageService {
 	}
 
 	@Override
+	@PerformanceStorageLogger
 	public boolean doesImageExist(ImageDetailsPayload image) {
 		final List<FieldError> errors;
 		try {

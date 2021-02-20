@@ -24,10 +24,12 @@ public class AzureImageValidatorComponent extends BaseImageValidatorComponent{
 
 	@Override
 	public void checkStorage() {
+		log.debug("Checking azure storage availability.");
 		if(!blobContainer.exists()) {
 			log.error(ApiConstants.EXP_ERROR_NOT_EXIST_BUCKET.concat(ApiConstants.MSG_FORMAT_ADDING_INFO), containerName);
 			throw new AppException(ApiConstants.EXP_ERROR_NOT_EXIST_BUCKET, null);
 		}
+		log.debug("Azure storage is availability.");
 	}
 	
 

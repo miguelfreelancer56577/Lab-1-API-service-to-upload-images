@@ -30,7 +30,7 @@ public class ApiConstants {
 	public static final String EXP_ERROR_READ_FILE = "There was an error to get content's file.";
 	public static final String EXP_ERROR_READ_AVAILABLE_IMAGES = "There was an error to list available images from storage.";
 	public static final String EXP_ERROR_READ_METADATA_IMAGES = "There was an error getting metadata from the image.";
-	public static final String EXP_ERROR_NOT_EXIST_BUCKET = "The bucket you're trying to access does not exists.";
+	public static final String EXP_ERROR_NOT_EXIST_BUCKET = "The bucket you're trying to access does not exist.";
 	public static final String EXP_ERROR_STORAGE_UNAVAILABLE = "The storage service is unavailable.";
 	public static final String EXP_ERROR_CREATE_DIR = "There was an error to create directory in your file system.";
 	
@@ -63,6 +63,6 @@ public class ApiConstants {
 	public static final String APP_CONFIG_IMAGE_AWS_ACCESSKEY = "${app.config.image.aws.accesskey}";
 	public static final String APP_CONFIG_IMAGE_AWS_SECRETKEY = "${app.config.image.aws.secretkey}";
 	public static final String APP_CONFIG_IMAGE_AWS_REGION = "${app.config.image.aws.region}";
-	
+	public static final String SPRING_PROFILES_ACTIVE = "${spring.profiles.active}";
 	
 }

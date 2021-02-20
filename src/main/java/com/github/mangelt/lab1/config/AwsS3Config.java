@@ -29,13 +29,13 @@ public class AwsS3Config {
 	
 	@Bean
 	AWSCredentials awsCredencials() {
-		log.info("Setting up aws credencials.");
+		log.debug("Setting up aws credencials.");
 		return new BasicAWSCredentials(accesskey, secretkey);
 	}
 	
 	@Bean(name = ApiConstants.BEAN_S3_CLIENT)
 	AmazonS3 s3Client(AWSCredentials credentials) {
-		log.info("Setting up aws client.");
+		log.debug("Setting up aws client.");
 		return AmazonS3ClientBuilder
 				  .standard()
 				  .withCredentials(new AWSStaticCredentialsProvider(credentials))

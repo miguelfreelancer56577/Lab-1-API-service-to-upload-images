@@ -13,13 +13,18 @@ import com.github.mangelt.lab1.domain.ImageDetailsPayload;
 import com.github.mangelt.lab1.exception.AppValidationException;
 import com.github.mangelt.lab1.util.ApiConstants;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
 @Profile(value = ApiConstants.PROFILE_LOCAL)
+@Slf4j
 public abstract class BaseImageValidatorComponent implements ImageValidator{
 
 	@Override
 	public void checkImage(ImageDetailsPayload image) {
 		final List<FieldError> errors = new ArrayList<>();
+		
+		log.debug("Validating received image. {}", image);
 //		it must be of type JPG
 		Optional
 			.ofNullable(image.getImageFile().getOriginalFilename())
@@ -47,6 +52,7 @@ public abstract class BaseImageValidatorComponent implements ImageValidator{
 		});
 		
 		if(!errors.isEmpty()) {
+			log.debug("There are some errors with the received image. {}", errors);
 			throw new AppValidationException(errors);
 		}
 		
