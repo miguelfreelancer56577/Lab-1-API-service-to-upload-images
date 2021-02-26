@@ -26,10 +26,12 @@ public class AwsImageValidatorComponent extends BaseImageValidatorComponent{
 
 	@Override
 	public void checkStorage() {
+		log.debug("Checking S3 storage availability.");
 		if(!client.doesBucketExist(bucketName)) {
 			log.error(ApiConstants.EXP_ERROR_NOT_EXIST_BUCKET.concat(ApiConstants.MSG_FORMAT_ADDING_INFO), bucketName);
 			throw new AppException(ApiConstants.EXP_ERROR_NOT_EXIST_BUCKET, null);
 		}
+		log.debug("S3 storage is availability.");
 	}
 	
 

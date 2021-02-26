@@ -24,6 +24,7 @@ public class LocalImageValidatorComponent extends BaseImageValidatorComponent{
 		final boolean mkdir;
 //		check if directory already exist otherwise it's created
 		File dir = new File(path);
+		log.debug("Checking permissions for local storage.");
 		if(!dir.exists()) {
 			mkdir = dir.mkdir();
 			if(!mkdir) {
@@ -31,6 +32,7 @@ public class LocalImageValidatorComponent extends BaseImageValidatorComponent{
 				throw new AppException(ApiConstants.EXP_ERROR_CREATE_DIR, null);
 			}
 		}
+		log.debug("Local storage is is availability.");
 	}
 
 }

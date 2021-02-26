@@ -28,7 +28,7 @@ public class AzureBlobStorageConfig {
 	protected BlobServiceClient storageClient()
 	{
 //			return a new client to use blob storage
-		log.info("Setting up azure storage client.");
+		log.debug("Setting up azure storage client.");
 		return new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
 	}
 	
@@ -36,7 +36,7 @@ public class AzureBlobStorageConfig {
 	@ConditionalOnClass(value = {BlobServiceClient.class})
 	protected BlobContainerClient  blobContainer(BlobServiceClient storageClient)
 	{
-		log.info("Setting up azure blob client.");
+		log.debug("Setting up azure blob client.");
 		return storageClient.getBlobContainerClient(containerName);
 	}
 }

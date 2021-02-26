@@ -24,6 +24,7 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobProperties;
+import com.github.mangelt.lab1.annotation.PerformanceStorageLogger;
 import com.github.mangelt.lab1.component.ImageValidator;
 import com.github.mangelt.lab1.domain.FieldError;
 import com.github.mangelt.lab1.domain.ImageDetailsPayload;
@@ -52,6 +53,7 @@ public class AzureStorageImpl implements StorageService {
 	protected String containerName;
 	
 	@Override
+	@PerformanceStorageLogger
 	public ResponseEntity<ReponseBodyPayload<List<ImageDetailsPayload>>> listAvailableImages() {
 		final ReponseBodyPayload<List<ImageDetailsPayload>> response = new ReponseBodyPayload<>(HttpStatus.OK.value(), ApiConstants.MSG_OK_IMAGE_LIST);
 		final List<ImageDetailsPayload> lstImages;
@@ -61,6 +63,7 @@ public class AzureStorageImpl implements StorageService {
 		lstItems = StreamSupport
 				.stream(blobContainer.listBlobs().spliterator(), false)
 				.collect(Collectors.toList());
+		log.debug("lstItems: {}", lstItems);
 		lstImages = lstItems
 			.stream()
 			.map(blobItem->blobContainer.getBlobClient(blobItem.getName()).getProperties())
@@ -73,14 +76,18 @@ public class AzureStorageImpl implements StorageService {
 					.uploadedDate(Long.parseLong(objMeta.get(ApiConstants.REQ_PARAM_UPLOADED_DATE)))
 					.build())
 			.collect(Collectors.toList());
+		log.debug("lstImages: {}", lstImages);
 		if(lstImages.isEmpty()) {
+			log.debug(ApiConstants.MSG_OK_IMAGE_UNAVAILABLE);
 			response.setMessage(ApiConstants.MSG_OK_IMAGE_UNAVAILABLE);
 		}
 		response.setContent(lstImages);
+		log.debug("response: {}", response);
 		return ResponseEntity.ok(response);
 	}
 
 	@Override
+	@PerformanceStorageLogger
 	public ResponseEntity<ResponseBodyImage> saveImage(ImageDetailsPayload image) {
 		final Instant instant = Instant.now();
 		final ResponseBodyImage response = new ResponseBodyImage();
@@ -120,6 +127,7 @@ public class AzureStorageImpl implements StorageService {
 	}
 
 	@Override
+	@PerformanceStorageLogger
 	public boolean doesImageExist(ImageDetailsPayload image) {
 		final List<FieldError> errors;
 		final BlobClient blobClient;

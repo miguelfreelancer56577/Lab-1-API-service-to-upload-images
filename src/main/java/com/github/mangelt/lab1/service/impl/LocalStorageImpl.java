@@ -25,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.github.mangelt.lab1.annotation.PerformanceStorageLogger;
 import com.github.mangelt.lab1.component.ImageValidator;
 import com.github.mangelt.lab1.domain.FieldError;
 import com.github.mangelt.lab1.domain.ImageDetailsPayload;
@@ -49,6 +50,7 @@ public class LocalStorageImpl implements StorageService {
 	String path;
 	
 	@Override
+	@PerformanceStorageLogger
 	public ResponseEntity<ReponseBodyPayload<List<ImageDetailsPayload>>> listAvailableImages() {
 		final ReponseBodyPayload<List<ImageDetailsPayload>> response = new ReponseBodyPayload<>(HttpStatus.OK.value(), ApiConstants.MSG_OK_IMAGE_LIST);
 		final List<ImageDetailsPayload> lstImages = new ArrayList<>(); 
@@ -70,15 +72,18 @@ public class LocalStorageImpl implements StorageService {
 					log.error(ApiConstants.EXP_ERROR_READ_METADATA_IMAGES.concat(ApiConstants.MSG_FORMAT_IMAGE_PATH), file);
 					throw new AppException(ApiConstants.EXP_ERROR_READ_METADATA_IMAGES, e);
 				}
+				log.debug("lstImages: {}", lstImages);
 			});
 		} catch (Exception e) {
 			log.error(ApiConstants.EXP_ERROR_READ_AVAILABLE_IMAGES, e);
 			throw new AppException(ApiConstants.EXP_ERROR_READ_AVAILABLE_IMAGES, e);
 		}
+		log.debug("response: {}", response);
 		return ResponseEntity.ok(response);
 	}
 
 	@Override
+	@PerformanceStorageLogger
 	public ResponseEntity<ResponseBodyImage> saveImage(ImageDetailsPayload image) {
 		final Instant instant = Instant.now();
 		final ResponseBodyImage response = new ResponseBodyImage();
@@ -107,6 +112,7 @@ public class LocalStorageImpl implements StorageService {
 	}
 
 	@Override
+	@PerformanceStorageLogger
 	public boolean doesImageExist(ImageDetailsPayload image) {
 		final List<FieldError> errors;
 //		Image must not be registered with the same name
