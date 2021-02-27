@@ -64,5 +64,12 @@ public class ApiConstants {
 	public static final String APP_CONFIG_IMAGE_AWS_SECRETKEY = "${app.config.image.aws.secretkey}";
 	public static final String APP_CONFIG_IMAGE_AWS_REGION = "${app.config.image.aws.region}";
 	public static final String SPRING_PROFILES_ACTIVE = "${spring.profiles.active}";
+	public static final String AZURE_STORAGE_CONNECTION_STRING = "${azure.storage.connection.string}";
+	public static final String AZURE_STORAGE_CONTAINER_NAME = "${azure.storage.container.name}";
+	
+//	Logging identifiers
+	public static final String IMAGE_IDENTIFIER = "[IMAGE]";
+	public static final String AZURE_CONFIG_IDENTIFIER = "[AZURE_CONFIG]";
+	public static final String AWS_CONFIG_IDENTIFIER = "[AWS_CONFIG]";
 	
 }

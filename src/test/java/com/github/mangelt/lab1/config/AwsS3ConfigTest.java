@@ -20,7 +20,7 @@ import com.github.mangelt.lab1.util.ApiConstants;
 		"app.config.image.aws.secretkey=",
 		"spring.profiles.active="+ApiConstants.PROFILE_AWS},
 	locations = "classpath:test.properties")
-class AwsS3ConfigIntegrationTest {
+class AwsS3ConfigTest {
 
 	@Autowired
 	AWSCredentials credentials;

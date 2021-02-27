@@ -18,17 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AzureBlobStorageConfig {
 	
-	@Value("${azure.storage.connection.string}")
+	@Value(ApiConstants.AZURE_STORAGE_CONNECTION_STRING)
 	protected String connectionString;
 
-	@Value("${azure.storage.container.name}")
+	@Value(ApiConstants.AZURE_STORAGE_CONTAINER_NAME)
 	protected String containerName;
 	
 	@Bean
 	protected BlobServiceClient storageClient()
 	{
 //			return a new client to use blob storage
-		log.debug("Setting up azure storage client.");
+		log.debug("{} Setting up azure storage client.", ApiConstants.AZURE_CONFIG_IDENTIFIER);
 		return new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
 	}
 	
@@ -36,7 +36,7 @@ public class AzureBlobStorageConfig {
 	@ConditionalOnClass(value = {BlobServiceClient.class})
 	protected BlobContainerClient  blobContainer(BlobServiceClient storageClient)
 	{
-		log.debug("Setting up azure blob client.");
+		log.debug("{} Setting up azure blob client.", ApiConstants.AZURE_CONFIG_IDENTIFIER);
 		return storageClient.getBlobContainerClient(containerName);
 	}
 }
