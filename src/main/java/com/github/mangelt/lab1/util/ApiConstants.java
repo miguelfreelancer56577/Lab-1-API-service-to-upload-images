@@ -9,7 +9,8 @@ public class ApiConstants {
 	public static final String IMAGE_SERVICE_NAME_MANDATORY = "Name of the image is mandatory.";
 	public static final String IMAGE_SERVICE_FILE_IMAGE_MANDATORY = "File image is mandatory.";
 	public static final String IMAGE_SERVICE_FILE_IMAGE_TYPE = "Only JPG images are permitted.";
-	public static final String IMAGE_SERVICE_FILE_IMAGE_SIZE = "Only JPG images equal or less than 1M are permitted.";
+	public static final String IMAGE_SERVICE_FILE_IMAGE_CONTENT_TYPE = "Content type not permitted. It must be JPG";
+	public static final String IMAGE_SERVICE_FILE_IMAGE_SIZE = "The image cannot be empty and can be equal or less than 1M.";
 	public static final String IMAGE_SERVICE_FILE_IMAGE_ALREADY_REGISTERED = "There is an image already registered with that name.";
 	
 //	request params
@@ -24,6 +25,7 @@ public class ApiConstants {
 	public static final String SIGN_COLON = ":";
 	public static final String SIGN_DOT = ".";
 	public static final String CARD_JPG = "jpg";
+	public static final String CARD_JPG_CONTENT_TYPE = "image/jpeg";
 	
 //	exception messages 
 	public static final String EXP_VALIDATION_FIELDS = "Please verify the correctness of required fields.";
@@ -33,6 +35,7 @@ public class ApiConstants {
 	public static final String EXP_ERROR_NOT_EXIST_BUCKET = "The bucket you're trying to access does not exist.";
 	public static final String EXP_ERROR_STORAGE_UNAVAILABLE = "The storage service is unavailable.";
 	public static final String EXP_ERROR_CREATE_DIR = "There was an error to create directory in your file system.";
+	public static final String EXP_ERROR_IMAGE_CONTENT = "There is an error with the content of the file.";
 	
 //	message format
 	public static final String MSG_FORMAT_ADDING_INFO = ": {}";
