@@ -3,7 +3,9 @@ package com.github.mangelt.lab1.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,11 +25,13 @@ public class ImageController {
 	StorageService storageService;
 	
 	@PostMapping(ApiConstants.MAPPING_IMAGE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<ResponseBodyImage> storeImage(ImageDetailsPayload image){
 		return storageService.saveImage(image);
 	}
 	
-	@GetMapping(ApiConstants.MAPPING_IMAGE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@GetMapping(path = ApiConstants.MAPPING_IMAGE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ReponseBodyPayload<List<ImageDetailsPayload>>> listImages(){
 		return storageService.listAvailableImages();
 	}

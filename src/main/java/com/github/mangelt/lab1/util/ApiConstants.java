@@ -4,6 +4,7 @@ public class ApiConstants {
 	private ApiConstants() {}
 	public static final String BASE_API_URL = "/api/v1";
 	public static final String MAPPING_IMAGE = "/images";
+	public static final String MAPPING_USER = "/users";
 	
 //	message for validation
 	public static final String IMAGE_SERVICE_NAME_MANDATORY = "Name of the image is mandatory.";
@@ -11,6 +12,13 @@ public class ApiConstants {
 	public static final String IMAGE_SERVICE_FILE_IMAGE_TYPE = "Only JPG images are permitted.";
 	public static final String IMAGE_SERVICE_FILE_IMAGE_SIZE = "Only JPG images equal or less than 1M are permitted.";
 	public static final String IMAGE_SERVICE_FILE_IMAGE_ALREADY_REGISTERED = "There is an image already registered with that name.";
+	public static final String USER_SERVICE_USERID_MANDATORY = "User Id is mandatory.";
+	public static final String USER_SERVICE_NAME_MANDATORY = "Name is mandatory.";
+	public static final String USER_SERVICE_LASTNAME_MANDATORY = "Last Name is mandatory.";
+	public static final String USER_SERVICE_SECONDNAME_MANDATORY = "Second Name is mandatory.";
+	public static final String USER_SERVICE_PASSWORD_MANDATORY = "Password Name is mandatory.";
+	public static final String USER_SERVICE_EDGE_MANDATORY = "Edge Name is mandatory.";
+	public static final String USER_SERVICE_AUTHGROUPS_MANDATORY = "Auth Group is mandatory.";
 	
 //	request params
 	public static final String REQ_PARAM_IMAGE_FILE = "imageFile";
@@ -24,6 +32,7 @@ public class ApiConstants {
 	public static final String SIGN_COLON = ":";
 	public static final String SIGN_DOT = ".";
 	public static final String CARD_JPG = "jpg";
+	public static final String DEFAULT_ROLE = "USER";
 	
 //	exception messages 
 	public static final String EXP_VALIDATION_FIELDS = "Please verify the correctness of required fields.";
@@ -33,6 +42,9 @@ public class ApiConstants {
 	public static final String EXP_ERROR_NOT_EXIST_BUCKET = "The bucket you're trying to access does not exist.";
 	public static final String EXP_ERROR_STORAGE_UNAVAILABLE = "The storage service is unavailable.";
 	public static final String EXP_ERROR_CREATE_DIR = "There was an error to create directory in your file system.";
+	public static final String EXP_ERROR_INSERT_USER = "There was an error to insert the user.";
+	public static final String EXP_ERROR_FIND_USER = "There was an error to find the user.";
+	public static final String EXP_ERROR_DELETE_USER = "There was an error to delete the user.";
 	
 //	message format
 	public static final String MSG_FORMAT_ADDING_INFO = ": {}";
@@ -45,6 +57,7 @@ public class ApiConstants {
 	public static final String MSG_OK_IMAGE_SAVE = "The image was stored successfully.";
 	public static final String MSG_OK_IMAGE_LIST = "The images were retrieved successfully from the storage.";
 	public static final String MSG_OK_IMAGE_UNAVAILABLE = "there are no available images stored.";
+	public static final String MSG_CREATED_USER_OK = "The user was created successfully.";
 	
 //	configuration values 
 	public static final Long RULE_MAX_IMAGE_SIZE = 1000000L;
