@@ -37,26 +37,32 @@ public class AzureUserDetailsImpl implements ImageUserDetailsService<RequestUser
 		final TableStorageUser tableStorageUser = new TableStorageUser(username);
 		final Optional<TableStorageUser> findByEntity = repository.findByEntity(tableStorageUser);
 		if(!findByEntity.isPresent()) {
-			log.error("cannot find username: " + username);
-	 		throw new UsernameNotFoundException("cannot find username: " + username);
+			log.debug(ApiConstants.EXP_ERROR_NOT_FOUND_USER.concat(username));
+			throw new AppException(ApiConstants.EXP_ERROR_NOT_FOUND_USER.concat(username), new UsernameNotFoundException(ApiConstants.EXP_ERROR_NOT_FOUND_USER.concat(username)));
 	 	}
 		return new AzureUserPrincipal(findByEntity.get());
 	}
 
 	@Override
-	public void deleteUser(RequestUserPayload user) {
-		final TableStorageUser tableStorageUser = new TableStorageUser(user.getUserId());
-		repository.deleteByEntity(tableStorageUser);
+	public ResponseEntity<Void> delete(String userId) {
+		final TableStorageUser tableStorageUser = new TableStorageUser(userId);
+		try {
+			repository.deleteByEntity(tableStorageUser);
+		} catch (Exception e) {
+			log.debug(ApiConstants.EXP_ERROR_DELETE_USER);
+			throw new AppException(ApiConstants.EXP_ERROR_DELETE_USER, null);
+		}
+		return ResponseEntity.noContent().build();
 	}
 
 	@Override
 	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> create(RequestUserPayload user) {
-		final ReponseBodyPayload<RequestUserPayload> response = new ReponseBodyPayload<>(HttpStatus.CREATED.value(), ApiConstants.MSG_CREATED_USER_CREATED);
+		final ReponseBodyPayload<RequestUserPayload> response = new ReponseBodyPayload<>(HttpStatus.CREATED.value(), ApiConstants.MSG_CREATED_USER);
 		final TableStorageUser row = mapper.map(user, TableStorageUser.class);
 		final Optional<TableStorageUser> existsUser = repository.findByEntity(row);
 		if(existsUser.isPresent()) {
-			log.debug(ApiConstants.EXP_ERROR_USER_ALREADY_REGISTER);
-			throw new AppException(ApiConstants.EXP_ERROR_USER_ALREADY_REGISTER, null);
+			log.debug(ApiConstants.EXP_ERROR_USER_ALREADY_REGISTERED);
+			throw new AppException(ApiConstants.EXP_ERROR_USER_ALREADY_REGISTERED, null);
 		}
 		final TableStorageUser rowReturned = repository.insertOrReplace(row);
 		RequestUserPayload rs = mapper.map(rowReturned, RequestUserPayload.class);
@@ -67,8 +73,13 @@ public class AzureUserDetailsImpl implements ImageUserDetailsService<RequestUser
 
 	@Override
 	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> update(RequestUserPayload user) {
-		final ReponseBodyPayload<RequestUserPayload> response = new ReponseBodyPayload<>(HttpStatus.OK.value(), ApiConstants.MSG_CREATED_USER_OK);
+		final ReponseBodyPayload<RequestUserPayload> response = new ReponseBodyPayload<>(HttpStatus.OK.value(), ApiConstants.MSG_OK_USER);
 		final TableStorageUser row = mapper.map(user, TableStorageUser.class);
+		final Optional<TableStorageUser> existsUser = repository.findByEntity(row);
+		if(!existsUser.isPresent()) {
+			log.debug(ApiConstants.EXP_ERROR_USER_NOT_REGISTERED);
+			throw new AppException(ApiConstants.EXP_ERROR_USER_NOT_REGISTERED, null);
+		}
 		final TableStorageUser rowReturned = repository.insertOrReplace(row);
 		RequestUserPayload rs = mapper.map(rowReturned, RequestUserPayload.class);
 		response.setContent(rs);

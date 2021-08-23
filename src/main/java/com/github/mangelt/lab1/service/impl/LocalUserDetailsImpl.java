@@ -15,6 +15,7 @@ import com.github.mangelt.lab1.domain.ReponseBodyPayload;
 import com.github.mangelt.lab1.domain.RequestUserPayload;
 import com.github.mangelt.lab1.entity.AuthGroup;
 import com.github.mangelt.lab1.entity.User;
+import com.github.mangelt.lab1.exception.AppException;
 import com.github.mangelt.lab1.repository.AuthGroupRepository;
 import com.github.mangelt.lab1.repository.UserRepository;
 import com.github.mangelt.lab1.service.ImageUserDetailsService;
@@ -40,16 +41,22 @@ public class LocalUserDetailsImpl implements ImageUserDetailsService<RequestUser
 		List<AuthGroup> findAuthGroup;
 	 	Optional<User> findByUsername = userRepository.findByUserId(username);
 	 	if(!findByUsername.isPresent()) {
-	 		log.error("cannot find username: " + username);
-	 		throw new UsernameNotFoundException("cannot find username: " + username);
+	 		log.debug(ApiConstants.EXP_ERROR_NOT_FOUND_USER.concat(username));
+			throw new AppException(ApiConstants.EXP_ERROR_NOT_FOUND_USER.concat(username), new UsernameNotFoundException(ApiConstants.EXP_ERROR_NOT_FOUND_USER.concat(username)));
 	 	}
 	 	findAuthGroup = authGroup.findByUserId(username);
 		return new ImageUserPrincipal(findByUsername.get(), findAuthGroup);
 	}
 
 	@Override
-	public void deleteUser(RequestUserPayload t) {
-		
+	public ResponseEntity<Void> delete(String userId) {
+		try {
+			userRepository.deleteByUserId(userId);
+		} catch (Exception e) {
+			log.debug(ApiConstants.EXP_ERROR_DELETE_USER);
+			throw new AppException(ApiConstants.EXP_ERROR_DELETE_USER, null);
+		}
+		return ResponseEntity.noContent().build();
 	}
 
 	@Override
