@@ -1,10 +1,6 @@
 package com.github.mangelt.lab1.config;
 
-import java.util.Objects;
-
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,7 +8,7 @@ import com.github.mangelt.lab1.domain.RequestUserPayload;
 import com.github.mangelt.lab1.entity.TableStorageUser;
 
 @Configuration
-public class AppConfig {
+public class MappingConfig {
 	
 	@Bean
 	public ModelMapper mapper() {
@@ -28,6 +24,7 @@ public class AppConfig {
 				mapper.map(RequestUserPayload::getIsAccountNonLocked, TableStorageUser::setIsAccountNonLocked);
 				mapper.map(RequestUserPayload::getIsCredentialsNonExpired, TableStorageUser::setIsCredentialsNonExpired);
 				mapper.map(RequestUserPayload::getIsEnabled, TableStorageUser::setIsEnabled);
+				mapper.map(RequestUserPayload::getPassword, TableStorageUser::setPassword);
 			});
 		return modelMapper;
 	}

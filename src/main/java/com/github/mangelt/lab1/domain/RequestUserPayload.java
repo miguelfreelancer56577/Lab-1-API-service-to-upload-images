@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import com.github.mangelt.lab1.util.ApiConstants;
 
 import lombok.AllArgsConstructor;
@@ -47,5 +49,9 @@ public class RequestUserPayload {
     }
     public Boolean getIsEnabled() {
     	return Optional.ofNullable(isEnabled).orElseGet(()->true);
+    }
+    public String getPassword() {
+    	final BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder(ApiConstants.DEFAULTS_SECURITY_STRENGTH);
+    	return bcryptEncoder.encode(password);
     }
 }

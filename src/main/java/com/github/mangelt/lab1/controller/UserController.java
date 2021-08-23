@@ -22,7 +22,7 @@ public class UserController {
 	private ImageUserDetailsService<RequestUserPayload> imageUserDetailsService;
 	
 	@PostMapping(path = ApiConstants.MAPPING_USER, produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> save(@RequestBody RequestUserPayload payload) {
 		return imageUserDetailsService.saveUser(payload);
 	}

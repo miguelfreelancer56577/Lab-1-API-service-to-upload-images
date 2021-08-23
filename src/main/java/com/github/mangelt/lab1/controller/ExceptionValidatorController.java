@@ -10,6 +10,7 @@ import javax.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -25,7 +26,7 @@ public class ExceptionValidatorController extends ResponseEntityExceptionHandler
 
 	@ExceptionHandler(value = {ConstraintViolationException.class})
 	ResponseEntity<Object> handleValidationPayloadExceptions(
-      RuntimeException ex, WebRequest request) {
+			ConstraintViolationException ex, WebRequest request) {
         return handleExceptionInternal(ex, ReponseBodyPayload
         		.builder()
         		.status(HttpStatus.BAD_REQUEST.value())
@@ -47,6 +48,20 @@ public class ExceptionValidatorController extends ResponseEntityExceptionHandler
 				new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 	
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(
+			MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+		String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+        List<String> validationList = ex.getBindingResult().getFieldErrors().stream().map(fieldError->fieldError.getDefaultMessage()).collect(Collectors.toList());
+        return handleExceptionInternal(ex, ReponseBodyPayload
+				.builder()
+				.status(HttpStatus.BAD_REQUEST.value())
+				.message(errorMessage)
+				.content(validationList)
+				.build(), 
+				new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
+	
 	List<FieldError> getFields(RuntimeException ex){
 		final List<FieldError> fields = new ArrayList<>();
 		final String[] elements = ex.getMessage().split(ApiConstants.SIGN_COMMA);
@@ -63,11 +78,18 @@ public class ExceptionValidatorController extends ResponseEntityExceptionHandler
 	}
 	
 	FieldError getField(String inputField) {
-		String[] chain = inputField.split(ApiConstants.SIGN_COLON);
+		final String[] arrFragPro;
+		final String[] chain = inputField.split(ApiConstants.SIGN_COLON);
+		String fieldName = chain[0];
+		if(fieldName.contains(ApiConstants.SIGN_DOT)) {
+			arrFragPro = fieldName.split(ApiConstants.SIGN_SACAPED_DOT);
+			fieldName = arrFragPro[arrFragPro.length-1];
+		}
+		final String fieldMessage = chain[1];
 		return FieldError
 			.builder()
-			.fieldMessage(chain[1])
-			.fieldName(chain[0])
+			.fieldMessage(fieldMessage)
+			.fieldName(fieldName)
 			.build();
 	}
 	

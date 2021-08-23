@@ -15,12 +15,12 @@ import com.github.mangelt.lab1.exception.AppException;
 public class AppExceptionController extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(value = {AppException.class})
-	ResponseEntity<Object> handleAppExceptions(
-			AppException ex, WebRequest request) {
+	ResponseEntity<Object> handleAppExceptions(AppException ex, WebRequest request) {
 		return handleExceptionInternal(ex, ReponseBodyPayload
 				.builder()
 				.status(HttpStatus.BAD_REQUEST.value())
 				.message(ex.getMessage())
+				.content(ex.getCause())
 				.build(), 
 				new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
