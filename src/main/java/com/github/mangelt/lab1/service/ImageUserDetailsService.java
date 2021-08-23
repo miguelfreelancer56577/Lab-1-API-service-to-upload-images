@@ -7,6 +7,7 @@ import com.github.mangelt.lab1.domain.ReponseBodyPayload;
 import com.github.mangelt.lab1.domain.RequestUserPayload;
 
 public interface ImageUserDetailsService<T> extends UserDetailsService{
-	ResponseEntity<ReponseBodyPayload<RequestUserPayload>> saveUser(T t);
+	ResponseEntity<ReponseBodyPayload<RequestUserPayload>> create(T t);
+	ResponseEntity<ReponseBodyPayload<RequestUserPayload>> update(T t);
 	void deleteUser(T t);
 }

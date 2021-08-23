@@ -48,14 +48,18 @@ public class LocalUserDetailsImpl implements ImageUserDetailsService<RequestUser
 	}
 
 	@Override
-	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> saveUser(RequestUserPayload t) {
-		final ReponseBodyPayload<RequestUserPayload> response = new ReponseBodyPayload<>(HttpStatus.CREATED.value(), ApiConstants.MSG_CREATED_USER_OK);
+	public void deleteUser(RequestUserPayload t) {
+		
+	}
+
+	@Override
+	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> create(RequestUserPayload t) {
 		return null;
 	}
 
 	@Override
-	public void deleteUser(RequestUserPayload t) {
-		
+	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> update(RequestUserPayload t) {
+		return null;
 	}
 
 }

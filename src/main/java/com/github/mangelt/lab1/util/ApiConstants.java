@@ -57,6 +57,7 @@ public class ApiConstants {
 	public static final String EXP_ERROR_CREATE_DIR = "There was an error to create directory in your file system.";
 	public static final String EXP_ERROR_INSERT_USER = "There was an error to insert the user.";
 	public static final String EXP_ERROR_FIND_USER = "There was an error to find the user.";
+	public static final String EXP_ERROR_USER_ALREADY_REGISTER = "The user is already registered.";
 	public static final String EXP_ERROR_DELETE_USER = "There was an error to delete the user.";
 	public static final String EXP_ERROR_INVALID_CREDENCIALS = "Invalid credencials.";
 	public static final String EXP_ERROR_EXPIRED_TOKEN = "Your token has expired.";
@@ -77,7 +78,8 @@ public class ApiConstants {
 	public static final String MSG_OK_IMAGE_SAVE = "The image was stored successfully.";
 	public static final String MSG_OK_IMAGE_LIST = "The images were retrieved successfully from the storage.";
 	public static final String MSG_OK_IMAGE_UNAVAILABLE = "there are no available images stored.";
-	public static final String MSG_CREATED_USER_OK = "The user was created successfully.";
+	public static final String MSG_CREATED_USER_CREATED = "The user was created successfully.";
+	public static final String MSG_CREATED_USER_OK = "The user was updated successfully.";
 	
 //	configuration values 
 	public static final Long RULE_MAX_IMAGE_SIZE = 1000000L;

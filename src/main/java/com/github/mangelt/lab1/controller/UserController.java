@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +24,13 @@ public class UserController {
 	
 	@PostMapping(path = ApiConstants.MAPPING_USER, produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> save(@RequestBody RequestUserPayload payload) {
-		return imageUserDetailsService.saveUser(payload);
+	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> create(@RequestBody RequestUserPayload payload) {
+		return imageUserDetailsService.create(payload);
+	}
+	
+	@PutMapping(path = ApiConstants.MAPPING_USER, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> update(@RequestBody RequestUserPayload payload) {
+		return imageUserDetailsService.update(payload);
 	}
 }

@@ -15,6 +15,7 @@ import com.github.mangelt.lab1.auth.AzureUserPrincipal;
 import com.github.mangelt.lab1.domain.ReponseBodyPayload;
 import com.github.mangelt.lab1.domain.RequestUserPayload;
 import com.github.mangelt.lab1.entity.TableStorageUser;
+import com.github.mangelt.lab1.exception.AppException;
 import com.github.mangelt.lab1.repository.UserCrudRepository;
 import com.github.mangelt.lab1.service.ImageUserDetailsService;
 import com.github.mangelt.lab1.util.ApiConstants;
@@ -43,9 +44,20 @@ public class AzureUserDetailsImpl implements ImageUserDetailsService<RequestUser
 	}
 
 	@Override
-	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> saveUser(RequestUserPayload user) {
-		final ReponseBodyPayload<RequestUserPayload> response = new ReponseBodyPayload<>(HttpStatus.CREATED.value(), ApiConstants.MSG_CREATED_USER_OK);
+	public void deleteUser(RequestUserPayload user) {
+		final TableStorageUser tableStorageUser = new TableStorageUser(user.getUserId());
+		repository.deleteByEntity(tableStorageUser);
+	}
+
+	@Override
+	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> create(RequestUserPayload user) {
+		final ReponseBodyPayload<RequestUserPayload> response = new ReponseBodyPayload<>(HttpStatus.CREATED.value(), ApiConstants.MSG_CREATED_USER_CREATED);
 		final TableStorageUser row = mapper.map(user, TableStorageUser.class);
+		final Optional<TableStorageUser> existsUser = repository.findByEntity(row);
+		if(existsUser.isPresent()) {
+			log.debug(ApiConstants.EXP_ERROR_USER_ALREADY_REGISTER);
+			throw new AppException(ApiConstants.EXP_ERROR_USER_ALREADY_REGISTER, null);
+		}
 		final TableStorageUser rowReturned = repository.insertOrReplace(row);
 		RequestUserPayload rs = mapper.map(rowReturned, RequestUserPayload.class);
 		response.setContent(rs);
@@ -54,9 +66,14 @@ public class AzureUserDetailsImpl implements ImageUserDetailsService<RequestUser
 	}
 
 	@Override
-	public void deleteUser(RequestUserPayload user) {
-		final TableStorageUser tableStorageUser = new TableStorageUser(user.getUserId());
-		repository.deleteByEntity(tableStorageUser);
+	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> update(RequestUserPayload user) {
+		final ReponseBodyPayload<RequestUserPayload> response = new ReponseBodyPayload<>(HttpStatus.OK.value(), ApiConstants.MSG_CREATED_USER_OK);
+		final TableStorageUser row = mapper.map(user, TableStorageUser.class);
+		final TableStorageUser rowReturned = repository.insertOrReplace(row);
+		RequestUserPayload rs = mapper.map(rowReturned, RequestUserPayload.class);
+		response.setContent(rs);
+		log.debug("response: {}", response);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 }
