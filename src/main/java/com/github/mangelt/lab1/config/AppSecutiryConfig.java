@@ -1,20 +1,26 @@
 package com.github.mangelt.lab1.config;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
-import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.github.mangelt.lab1.auth.JwtAuthenticatorFilter;
+import com.github.mangelt.lab1.exception.AppAccessDeniedHandler;
+import com.github.mangelt.lab1.exception.JwtAuthenticationEntryPoint;
 import com.github.mangelt.lab1.util.ApiConstants;
 
 @Configuration
@@ -23,51 +29,53 @@ import com.github.mangelt.lab1.util.ApiConstants;
 public class AppSecutiryConfig  extends WebSecurityConfigurerAdapter{
 	
 	@Autowired
-	@Qualifier("azureUserDetailsImpl")
-	private UserDetailsService imageUserDetailsService;
+	private UserDetailsService userDetailsService;
+	
+	@Resource
+	JwtAuthenticatorFilter jwtAuthenticatorFilter;
+	
+	@Resource
+	JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	
+	@Autowired
+	AppAccessDeniedHandler accessDeniedHandler;
+	
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(ApiConstants.DEFAULTS_SECURITY_STRENGTH);
+	}
 
+	@Override
+	public void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+	}
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
+			.csrf().disable()
 			.authorizeRequests()
-			.antMatchers(ApiConstants.BASE_API_URL + ApiConstants.MAPPING_USER )
+			.antMatchers(ApiConstants.BASE_API_URL + ApiConstants.MAPPING_USER)
+			.authenticated()
+			.mvcMatchers(ApiConstants.MAPPING_AUTHENTICATION + ApiConstants.MAPPING_SIGNIN)
 			.permitAll()
-			//.anyRequest()
-			.antMatchers(ApiConstants.BASE_API_URL + "/**")
+			.anyRequest()
 			.authenticated()
 			.and()
-			.httpBasic();
+			.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+			.and()
+			.exceptionHandling().accessDeniedHandler(accessDeniedHandler)
+			.and()
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			.and()
+			.addFilterBefore(jwtAuthenticatorFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 
+	@Bean
 	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(authenticationProvider());
+	public AuthenticationManager authenticationManagerBean() throws Exception
+	{
+		return super.authenticationManagerBean();
 	}
 
-	/*@Bean
-	@Override
-	public UserDetailsService userDetailsService() {
-		List<UserDetails> users = new ArrayList<>();
-		users.add(User.withDefaultPasswordEncoder().username("user1").password("user1").roles("USER", "ADMIN").build());
-		users.add(User.withDefaultPasswordEncoder().username("user2").password("user2").roles("USER").build());
-		return new InMemoryUserDetailsManager(users);
-	}*/
-	
-	@Bean
-	protected DaoAuthenticationProvider authenticationProvider() {
-		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-		provider.setUserDetailsService(imageUserDetailsService);
-		provider.setPasswordEncoder(new BCryptPasswordEncoder(11));
-		provider.setAuthoritiesMapper(authoritiesMapper());
-		return provider;
-	}
-	
-	@Bean
-	public GrantedAuthoritiesMapper authoritiesMapper() {
-		SimpleAuthorityMapper authorityMapper = new SimpleAuthorityMapper();
-        authorityMapper.setConvertToUpperCase(true);
-        authorityMapper.setDefaultAuthority("USER");
-        return authorityMapper;
-	}
-	
 }
