@@ -47,22 +47,22 @@ public class ImageUserPrincipal implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return user.isAccountNonExpired();
+		return user.getIsAccountNonExpired();
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return user.isAccountNonLocked();
+		return user.getIsAccountNonLocked();
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return user.isCredentialsNonExpired();
+		return user.getIsCredentialsNonExpired();
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return user.isEnabled();
+		return user.getIsEnabled();
 	}
 
 }

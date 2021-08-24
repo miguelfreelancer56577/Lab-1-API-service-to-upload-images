@@ -24,8 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-@Profile(ApiConstants.PROFILE_AZURE)
-public class AzureAuthentication implements AuthenticationService{
+public class AppAuthentication implements AuthenticationService{
 
 	@Autowired
 	private AuthenticationManager authenticationManager;

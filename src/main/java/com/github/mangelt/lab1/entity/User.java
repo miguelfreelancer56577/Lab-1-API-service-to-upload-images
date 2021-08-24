@@ -2,6 +2,8 @@ package com.github.mangelt.lab1.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -13,7 +15,8 @@ import lombok.Data;
 public class User {
 	@Id
     @Column(name="ID")
-    private long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long code;
 	@Column(name="USERID", nullable = false, unique = true)
 	private String userId;
     @Column(name="NAME", nullable = false)
@@ -27,11 +30,11 @@ public class User {
     @Column(name="EDGE", nullable = false)
     private String edge;
     @Column(name="ISACCOUNTNONEXPIRED", nullable = false, columnDefinition = "boolean default true")
-    private boolean isAccountNonExpired;
+    private Boolean isAccountNonExpired;
     @Column(name="ISACCOUNTNONLOCKED", nullable = false, columnDefinition = "boolean default true")
-    private boolean isAccountNonLocked;
+    private Boolean isAccountNonLocked;
     @Column(name="ISCREDENTIALSNONEXPIRED", nullable = false, columnDefinition = "boolean default true")
-    private boolean isCredentialsNonExpired;
+    private Boolean isCredentialsNonExpired;
     @Column(name="ISENABLED", nullable = false, columnDefinition = "boolean default true")
-    private boolean isEnabled;
+    private Boolean isEnabled;
 }

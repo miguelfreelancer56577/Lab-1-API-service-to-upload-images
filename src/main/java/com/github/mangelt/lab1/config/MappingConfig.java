@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.github.mangelt.lab1.domain.RequestUserPayload;
 import com.github.mangelt.lab1.entity.TableStorageUser;
+import com.github.mangelt.lab1.entity.User;
 
 @Configuration
 public class MappingConfig {
@@ -13,7 +14,7 @@ public class MappingConfig {
 	@Bean
 	public ModelMapper mapper() {
 		final ModelMapper modelMapper = new ModelMapper();
-		//User map
+		//Map from RequestUserPayload to TableStorageUser
 		modelMapper
 			.typeMap(RequestUserPayload.class, TableStorageUser.class)
 			.addMappings(mapper->{
@@ -25,6 +26,13 @@ public class MappingConfig {
 				mapper.map(RequestUserPayload::getIsCredentialsNonExpired, TableStorageUser::setIsCredentialsNonExpired);
 				mapper.map(RequestUserPayload::getIsEnabled, TableStorageUser::setIsEnabled);
 				mapper.map(RequestUserPayload::getPassword, TableStorageUser::setPassword);
+			});
+		//Map from RequestUserPayload to TableStorageUser
+		modelMapper
+			.typeMap(RequestUserPayload.class, User.class)
+			.addMappings(mapper->{
+				mapper.map(RequestUserPayload::getPassword, User::setPassword);
+				mapper.map(RequestUserPayload::getUserId, User::setUserId);
 			});
 		return modelMapper;
 	}

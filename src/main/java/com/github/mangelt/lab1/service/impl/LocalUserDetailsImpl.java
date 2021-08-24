@@ -2,7 +2,11 @@ package com.github.mangelt.lab1.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +18,7 @@ import com.github.mangelt.lab1.auth.ImageUserPrincipal;
 import com.github.mangelt.lab1.domain.ReponseBodyPayload;
 import com.github.mangelt.lab1.domain.RequestUserPayload;
 import com.github.mangelt.lab1.entity.AuthGroup;
+import com.github.mangelt.lab1.entity.TableStorageUser;
 import com.github.mangelt.lab1.entity.User;
 import com.github.mangelt.lab1.exception.AppException;
 import com.github.mangelt.lab1.repository.AuthGroupRepository;
@@ -29,11 +34,13 @@ import lombok.extern.slf4j.Slf4j;
 public class LocalUserDetailsImpl implements ImageUserDetailsService<RequestUserPayload>{
 	
 	private final UserRepository userRepository;
-	private final AuthGroupRepository authGroup;
+	private final AuthGroupRepository authGroupRepoitory;
+	private final ModelMapper mapper;
 	
-	public LocalUserDetailsImpl(UserRepository userRepository, AuthGroupRepository authGroup) {
+	public LocalUserDetailsImpl(UserRepository userRepository, AuthGroupRepository authGroup, ModelMapper mapper) {
 		this.userRepository = userRepository;
-		this.authGroup = authGroup;
+		this.authGroupRepoitory = authGroup;
+		this.mapper = mapper;
 	}
 	
 	@Override
@@ -44,14 +51,17 @@ public class LocalUserDetailsImpl implements ImageUserDetailsService<RequestUser
 	 		log.debug(ApiConstants.EXP_ERROR_NOT_FOUND_USER.concat(username));
 			throw new AppException(ApiConstants.EXP_ERROR_NOT_FOUND_USER.concat(username), new UsernameNotFoundException(ApiConstants.EXP_ERROR_NOT_FOUND_USER.concat(username)));
 	 	}
-	 	findAuthGroup = authGroup.findByUserId(username);
+	 	findAuthGroup = authGroupRepoitory.findByUserId(username);
 		return new ImageUserPrincipal(findByUsername.get(), findAuthGroup);
 	}
 
 	@Override
 	public ResponseEntity<Void> delete(String userId) {
 		try {
-			userRepository.deleteByUserId(userId);
+			//delete roles
+			log.debug("number of roles deleted: {}", authGroupRepoitory.removeByUserId(userId));
+			//delete user
+			log.debug("number of users deleted: {}", userRepository.deleteByUserId(userId));
 		} catch (Exception e) {
 			log.debug(ApiConstants.EXP_ERROR_DELETE_USER);
 			throw new AppException(ApiConstants.EXP_ERROR_DELETE_USER, null);
@@ -60,8 +70,37 @@ public class LocalUserDetailsImpl implements ImageUserDetailsService<RequestUser
 	}
 
 	@Override
-	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> create(RequestUserPayload t) {
-		return null;
+	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> create(RequestUserPayload payload) {
+		final ReponseBodyPayload<RequestUserPayload> response = new ReponseBodyPayload<>(HttpStatus.CREATED.value(), ApiConstants.MSG_CREATED_USER);
+		final Optional<User> existsUser = userRepository.findByUserId(payload.getUserId());
+		final User entity = mapper.map(payload, User.class);
+		final User rowReturned;
+		final RequestUserPayload rs;
+		List<AuthGroup> lstRoles;
+		if(existsUser.isPresent()) {
+			log.debug(ApiConstants.EXP_ERROR_USER_ALREADY_REGISTERED);
+			throw new AppException(ApiConstants.EXP_ERROR_USER_ALREADY_REGISTERED, null);
+		}
+		rowReturned = userRepository.save(entity);
+		//map user Roles
+		lstRoles = Stream.of(payload.getAuthGroups().split(ApiConstants.SIGN_COMMA))
+			.map(row->AuthGroup
+					.builder()
+					.userId(payload.getUserId())
+					.roleGroup(row)
+					.build())
+			.collect(Collectors.toList());
+		lstRoles = authGroupRepoitory.saveAll(lstRoles);
+		rs = mapper.map(rowReturned, RequestUserPayload.class);
+		//set the roles 
+		rs.setAuthGroups(lstRoles
+				.stream()
+				.map(AuthGroup::getRoleGroup)
+				.collect(Collectors
+						.joining(ApiConstants.SIGN_COMMA)));
+		response.setContent(rs);
+		log.debug("response: {}", response);
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 
 	@Override
