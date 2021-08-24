@@ -73,14 +73,33 @@ public class LocalUserDetailsImpl implements ImageUserDetailsService<RequestUser
 	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> create(RequestUserPayload payload) {
 		final ReponseBodyPayload<RequestUserPayload> response = new ReponseBodyPayload<>(HttpStatus.CREATED.value(), ApiConstants.MSG_CREATED_USER);
 		final Optional<User> existsUser = userRepository.findByUserId(payload.getUserId());
-		final User entity = mapper.map(payload, User.class);
-		final User rowReturned;
-		final RequestUserPayload rs;
-		List<AuthGroup> lstRoles;
 		if(existsUser.isPresent()) {
 			log.debug(ApiConstants.EXP_ERROR_USER_ALREADY_REGISTERED);
 			throw new AppException(ApiConstants.EXP_ERROR_USER_ALREADY_REGISTERED, null);
 		}
+		response.setContent(this.createOrUpdateUser(payload));
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
+	}
+
+	@Override
+	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> update(RequestUserPayload payload) {
+		final ReponseBodyPayload<RequestUserPayload> response = new ReponseBodyPayload<>(HttpStatus.OK.value(), ApiConstants.MSG_OK_USER);
+		final Optional<User> existsUser = userRepository.findByUserId(payload.getUserId());
+		if(!existsUser.isPresent()) {
+			log.debug(ApiConstants.EXP_ERROR_USER_NOT_REGISTERED);
+			throw new AppException(ApiConstants.EXP_ERROR_USER_NOT_REGISTERED, null);
+		}else {
+			this.delete(payload.getUserId());
+		}
+		response.setContent(this.createOrUpdateUser(payload));
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
+	protected RequestUserPayload createOrUpdateUser(RequestUserPayload payload){
+		final User entity = mapper.map(payload, User.class);
+		final User rowReturned;
+		final RequestUserPayload rs;
+		List<AuthGroup> lstRoles;
 		rowReturned = userRepository.save(entity);
 		//map user Roles
 		lstRoles = Stream.of(payload.getAuthGroups().split(ApiConstants.SIGN_COMMA))
@@ -98,14 +117,8 @@ public class LocalUserDetailsImpl implements ImageUserDetailsService<RequestUser
 				.map(AuthGroup::getRoleGroup)
 				.collect(Collectors
 						.joining(ApiConstants.SIGN_COMMA)));
-		response.setContent(rs);
-		log.debug("response: {}", response);
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
-	}
-
-	@Override
-	public ResponseEntity<ReponseBodyPayload<RequestUserPayload>> update(RequestUserPayload t) {
-		return null;
+		log.debug("response: {}", rs);
+		return rs;
 	}
 
 }
