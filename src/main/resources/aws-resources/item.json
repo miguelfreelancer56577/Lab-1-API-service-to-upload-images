@@ -1,0 +1,13 @@
+{
+    "userId": {"S": "mangelt@test.com"},
+    "name": {"S": "Miguel Angel"},
+    "lastName": {"S": "Torres"},
+    "secondName": {"S": "Renteria"},
+    "password": {"S": "$2a$11$yeGDWs0Gz17ZsMMfoBuOXuLuvxR6wH7krHgUQKQFWeOz82/JUv7dG"},
+    "edge": {"S": "32"},
+    "authGroups": {"SS": ["ROLE_ADMIN", "ROLE_USER"]},
+    "isAccountNonExpired": {"BOOL": true},
+    "isAccountNonLocked": {"BOOL": true},
+    "isCredentialsNonExpired": {"BOOL": true},
+    "isEnabled": {"BOOL": true}
+}
