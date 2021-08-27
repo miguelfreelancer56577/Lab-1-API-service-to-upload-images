@@ -1,0 +1,8 @@
+trigger:
+- feature/Implementing-azure-pipeline
+pool:
+  vmImage: 'ubuntu-latest'
+steps:
+- script: 'Starts Pipeline.'
+  displayName: 'Starting point'
+
