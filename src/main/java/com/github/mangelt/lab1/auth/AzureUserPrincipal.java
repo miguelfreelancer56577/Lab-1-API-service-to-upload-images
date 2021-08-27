@@ -26,7 +26,7 @@ public class AzureUserPrincipal implements UserDetails {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		final Set<SimpleGrantedAuthority> grantedAuthorities;
 		if(Objects.isNull(user.getAuthGroups())) {
-			Collections.emptySet();
+			return Collections.emptySet();
 		}
 		grantedAuthorities = Stream.of(StringUtils.commaDelimitedListToStringArray(user.getAuthGroups()))
 							.map(SimpleGrantedAuthority::new)

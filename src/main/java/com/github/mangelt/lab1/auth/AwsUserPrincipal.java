@@ -2,36 +2,39 @@ package com.github.mangelt.lab1.auth;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.persistence.Transient;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.github.mangelt.lab1.entity.AuthGroup;
-import com.github.mangelt.lab1.entity.User;
+import com.github.mangelt.lab1.entity.DynamoUserEntity;
 
-public class ImageUserPrincipal implements UserDetails {
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
+public class AwsUserPrincipal implements UserDetails {
 	
-	private final User user;
-	private final List<AuthGroup> authGroups;
+	private static final long serialVersionUID = 7571816734187601483L;
 	
-	public ImageUserPrincipal(User user, List<AuthGroup> authGroups) {
-		this.user = user;
-		this.authGroups = authGroups;
-	}
+	@Transient
+	private final DynamoUserEntity user;
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		if(authGroups.isEmpty()) {
+		final Set<SimpleGrantedAuthority> grantedAuthorities;
+		if(Objects.isNull(user.getAuthGroups())) {
 			return Collections.emptySet();
 		}
-		Set<SimpleGrantedAuthority> grantedAuthorities = new HashSet<>();
-		authGroups.forEach(group->{
-           grantedAuthorities.add(new SimpleGrantedAuthority(group.getRoleGroup()));
-        });
+		grantedAuthorities = user
+								.getAuthGroups()
+								.stream()
+								.map(SimpleGrantedAuthority::new)
+								.collect(Collectors.toSet());
 		return grantedAuthorities;
 	}
 

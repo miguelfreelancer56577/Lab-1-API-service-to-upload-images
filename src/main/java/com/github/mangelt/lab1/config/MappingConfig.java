@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.github.mangelt.lab1.domain.RequestUserPayload;
+import com.github.mangelt.lab1.entity.DynamoUserEntity;
 import com.github.mangelt.lab1.entity.TableStorageUser;
 import com.github.mangelt.lab1.entity.User;
 
@@ -34,6 +35,19 @@ public class MappingConfig {
 				mapper.map(RequestUserPayload::getPassword, User::setPassword);
 				mapper.map(RequestUserPayload::getUserId, User::setUserId);
 			});
+		//Map from RequestUserPayload to DynamoUserEntity
+		modelMapper
+		.typeMap(RequestUserPayload.class, DynamoUserEntity.class)
+		.addMappings(mapper->{
+			mapper.map(RequestUserPayload::getPassword, DynamoUserEntity::setPassword);
+			mapper.map(RequestUserPayload::getAuthGroupsAsSet, DynamoUserEntity::setAuthGroups);
+		});
+		//Map from DynamoUserEntity to RequestUserPayload
+		modelMapper
+		.typeMap(DynamoUserEntity.class, RequestUserPayload.class)
+		.addMappings(mapper->{
+			mapper.map(DynamoUserEntity::getAuthGroups, RequestUserPayload::setAuthGroupsFromSet);
+		});
 		return modelMapper;
 	}
 }
