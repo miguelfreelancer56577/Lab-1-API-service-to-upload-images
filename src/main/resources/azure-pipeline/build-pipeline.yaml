@@ -2,11 +2,9 @@ trigger:
 - feature/Implementing-azure-pipeline
 pool:
   vmImage: 'ubuntu-latest'
-jobs:
-- job: MavenJob
-  #timeoutInMinutes: 10
-  steps:
-  - task: Maven@3
+
+steps:
+- task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
     goals: 'clean package'
@@ -18,7 +16,3 @@ jobs:
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.8'
     jdkArchitectureOption: 'x64'
-    
-- job: Secondjob
-  steps:
-  - bash: echo "The Second job"
