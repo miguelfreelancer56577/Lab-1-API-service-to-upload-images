@@ -1,8 +1,7 @@
 trigger:
 - feature/Implementing-azure-pipeline
 pool:
-  name: 'Default'
-  vmImage: 'mtr-dev-vm-selfagent1'
+  vmImage: 'ubuntu-latest'
 
 steps:
 - task: Maven@3
