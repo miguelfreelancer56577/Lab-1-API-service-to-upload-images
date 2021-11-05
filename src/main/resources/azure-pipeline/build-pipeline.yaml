@@ -17,4 +17,10 @@ steps:
     jdkVersionOption: '1.8'
     jdkArchitectureOption: 'x64'
 
-- task: WhiteSource@21
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'JaCoCo'
+    summaryFileLocation: '${System.DefaultWorkingDirectory}/**/reports/jacoco/test/jacocoTestReport.xml'
+    pathToSources: '${System.DefaultWorkingDirectory}/**'
+    reportDirectory: '${System.DefaultWorkingDirectory}/**/reports/jacoco/test/html'
+    failIfCoverageEmpty: true
