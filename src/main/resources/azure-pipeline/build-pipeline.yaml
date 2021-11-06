@@ -14,7 +14,7 @@ steps:
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
-    goals: 'clean test package'
+    goals: 'clean test install sonar:sonar package'
     #options: '-X'
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
