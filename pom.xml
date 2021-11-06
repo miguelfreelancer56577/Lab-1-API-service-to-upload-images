@@ -15,7 +15,7 @@
 	<description>Lab1</description>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>1.8</java.version>
 	</properties>
 
 	<dependencies>
@@ -116,22 +116,5 @@
 			</plugin>
 		</plugins>
 	</build>
-	
-	  <profiles>
-	    <profile>
-	      <id>sonar</id>
-	      <activation>
-	        <activeByDefault>true</activeByDefault>
-	      </activation>
-	      <properties>
-	        <sonar.host.url>http://35.85.227.103:9000</sonar.host.url>
-			<sonar.login>350b5552a54bdacd073efcc1a3663c34b787e40a</sonar.login>
-	        <sonar.projectName>Spring-lab</sonar.projectName>
-	        <sonar.projectVersion>master</sonar.projectVersion>
-	        <sonar.test.exclusions>**/test/**/*.*</sonar.test.exclusions>
-	        <sonar.exclusions>**/ai/**/*.*,**/jdbc/**/*.*,**/mpt/**/*.*,**/jcr/**/*.*,**/JDBC*</sonar.exclusions>
-	      </properties>
-	    </profile>
-	  </profiles>
 
 </project>
