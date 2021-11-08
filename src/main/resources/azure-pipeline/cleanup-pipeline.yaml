@@ -14,7 +14,7 @@ steps:
     filePath: '$(System.DefaultWorkingDirectory)/target/app-srv-plan-cleanup.sh'
     workingDirectory: '$(System.DefaultWorkingDirectory)/target/'
     failOnStderr: true
-  displayName: 'Clean up app service plan.'
+  displayName: 'App service plan.'
   
 - task: Bash@3
   inputs:
@@ -22,4 +22,4 @@ steps:
     filePath: '$(System.DefaultWorkingDirectory)/target/acr-cleanup.sh'
     workingDirectory: '$(System.DefaultWorkingDirectory)/target/'
     failOnStderr: true
-  displayName: 'Clean up container registry.'
+  displayName: 'Container registry.'
