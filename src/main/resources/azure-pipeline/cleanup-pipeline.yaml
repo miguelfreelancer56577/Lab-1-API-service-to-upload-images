@@ -1,0 +1,25 @@
+trigger:
+- feature/Implementing-azure-pipeline
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+- group: dev-variable-group
+
+steps:
+
+- task: Bash@3
+  inputs:
+    targetType: 'filePath'
+    filePath: '$(System.DefaultWorkingDirectory)/target/app-srv-plan-cleanup.sh'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/target/'
+    failOnStderr: true
+  displayName: 'Clean up app service plan.'
+  
+- task: Bash@3
+  inputs:
+    targetType: 'filePath'
+    filePath: '$(System.DefaultWorkingDirectory)/target/acr-cleanup.sh'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/target/'
+    failOnStderr: true
+  displayName: 'Clean up container registry.'
