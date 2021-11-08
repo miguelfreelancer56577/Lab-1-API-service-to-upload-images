@@ -50,8 +50,8 @@ steps:
 - task: AzureAppServiceSettings@1
   inputs:
     azureSubscription: 'Suscripción de Azure 1(d19f674d-e7be-4536-a190-7b50b24cd379)'
-    appName: 'mtr-dev-app-srv'
-    resourceGroupName: 'mtr-dev-grp'
+    appName: 'mtr-$(AZ_ENV)-app-srv'
+    resourceGroupName: 'mtr-$(AZ_ENV)-grp'
     appSettings: |
       [
          {
@@ -61,7 +61,7 @@ steps:
          },
          {
           "name": "SPRING_PROFILES_ACTIVE",
-          "value": "$(APP_CONFIG_IMAGE_SECURITY_ID)",
+          "value": "$(SPRING_PROFILES_ACTIVE)",
           "slotSetting": true
          },
          {
@@ -80,3 +80,4 @@ steps:
           "slotSetting": true
          }
       ]
+
