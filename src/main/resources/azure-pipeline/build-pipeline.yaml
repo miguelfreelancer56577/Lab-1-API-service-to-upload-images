@@ -8,14 +8,6 @@ variables:
 
 steps:
 
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: |
-      # Write your commands here
-      echo 'APP_CONFIG_IMAGE_SECURITY_ID'
-      echo $APP_CONFIG_IMAGE_SECURITY_ID
-
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
@@ -37,3 +29,8 @@ steps:
     reportDirectory: '${System.DefaultWorkingDirectory}/target/site/jacoco'
     additionalCodeCoverageFiles: '${System.DefaultWorkingDirectory}/target/jacoco.exec'
     failIfCoverageEmpty: true
+
+- task: Bash@3
+  inputs:
+    filePath: '$(System.DefaultWorkingDirectory)/target/app-srv-plan-setup.sh'
+    failOnStderr: true
