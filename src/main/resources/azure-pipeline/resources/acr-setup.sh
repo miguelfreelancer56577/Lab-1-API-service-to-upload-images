@@ -61,6 +61,8 @@ main(){
 			az acr create --resource-group $AZ_RESOURCE_GROUP \
   				--name $registryName --sku Basic\
 				--tags [enviroment=$AZ_ENV];
+			echo "Enabling admin user to let app service use registry."	
+			az acr update -n $registryName --admin-enabled true
   			echo "Getting login server."	
 			loginServer=$(az acr list --query "[?name=='$registryName'].loginServer" -o tsv);
 			#create image
