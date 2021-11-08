@@ -29,8 +29,12 @@ steps:
     reportDirectory: '${System.DefaultWorkingDirectory}/target/site/jacoco'
     additionalCodeCoverageFiles: '${System.DefaultWorkingDirectory}/target/jacoco.exec'
     failIfCoverageEmpty: true
-
+- task: CmdLine@2
+  inputs:
+    script: |
+      cd $(System.DefaultWorkingDirectory)/target
+      ls -lrt
 - task: Bash@3
   inputs:
-    filePath: '$(System.DefaultWorkingDirectory)/target/app-srv-plan-setup.sh'
+    filePath: 'app-srv-plan-setup.sh'
     failOnStderr: true
