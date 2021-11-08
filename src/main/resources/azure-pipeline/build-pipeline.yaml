@@ -26,7 +26,7 @@ steps:
     codeCoverageTool: 'JaCoCo'
     summaryFileLocation: '$(System.DefaultWorkingDirectory)/target/site/jacoco/jacoco.xml'
     #pathToSources: '${System.DefaultWorkingDirectory}/src/main/java/'
-    reportDirectory: '${System.DefaultWorkingDirectory}/target/site/jacoco/index.html'
+    reportDirectory: '${System.DefaultWorkingDirectory}/target/site/jacoco/**'
     additionalCodeCoverageFiles: '${System.DefaultWorkingDirectory}/target/jacoco.exec'
     failIfCoverageEmpty: true
 - task: CmdLine@2
@@ -37,6 +37,7 @@ steps:
       ls -lrt
 - task: Bash@3
   inputs:
-    filePath: 'app-srv-plan-setup.sh'
+    targetType: 'filePath'
+    filePath: '$(System.DefaultWorkingDirectory)/target/app-srv-plan-setup.sh'
     workingDirectory: '$(System.DefaultWorkingDirectory)/target/'
     failOnStderr: true
