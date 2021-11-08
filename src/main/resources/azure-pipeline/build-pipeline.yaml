@@ -81,3 +81,8 @@ steps:
          }
       ]
 
+- task: AzureWebAppContainer@1
+  inputs:
+    azureSubscription: 'Suscripción de Azure 1(d19f674d-e7be-4536-a190-7b50b24cd379)'
+    appName: 'mtr-$(AZ_ENV)-app-srv'
+    containers: 'mtr$(AZ_ENV)acr.azurecr.io/lab1:latest'
