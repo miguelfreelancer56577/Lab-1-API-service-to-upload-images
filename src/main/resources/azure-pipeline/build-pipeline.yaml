@@ -20,6 +20,7 @@ steps:
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.8'
     jdkArchitectureOption: 'x64'
+  displayName: 'Maven'
 
 - task: PublishCodeCoverageResults@1
   inputs:
@@ -29,9 +30,11 @@ steps:
     reportDirectory: '${System.DefaultWorkingDirectory}/target/site/jacoco/**'
     additionalCodeCoverageFiles: '${System.DefaultWorkingDirectory}/target/jacoco.exec'
     failIfCoverageEmpty: true
-- task: Bash@3s
+  displayName: 'JaCoCo'
+- task: Bash@3
   inputs:
     targetType: 'filePath'
     filePath: '$(System.DefaultWorkingDirectory)/target/app-srv-plan-setup.sh'
     workingDirectory: '$(System.DefaultWorkingDirectory)/target/'
     failOnStderr: true
+  displayName: 'App service plan'
