@@ -37,4 +37,4 @@ steps:
     filePath: '$(System.DefaultWorkingDirectory)/target/app-srv-plan-setup.sh'
     workingDirectory: '$(System.DefaultWorkingDirectory)/target/'
     failOnStderr: true
-  displayName: 'App service plan'
+  displayName: 'Creation App service plan'
