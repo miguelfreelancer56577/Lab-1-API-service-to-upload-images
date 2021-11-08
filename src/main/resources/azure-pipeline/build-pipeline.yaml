@@ -38,3 +38,11 @@ steps:
     workingDirectory: '$(System.DefaultWorkingDirectory)/target/'
     failOnStderr: true
   displayName: 'Creation App service plan'
+
+- task: Bash@3
+  inputs:
+    targetType: 'filePath'
+    filePath: '$(System.DefaultWorkingDirectory)/target/acr-setup.sh'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/target/'
+    failOnStderr: true
+  displayName: 'Creation Container registry'
