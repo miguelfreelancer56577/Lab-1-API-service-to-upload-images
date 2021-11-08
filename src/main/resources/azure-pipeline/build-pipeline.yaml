@@ -56,27 +56,27 @@ steps:
       [
          {
           "name": "AZURE_STORAGE_CONNECTION_STRING",
-          "value": "$AZURE_STORAGE_CONNECTION_STRING",
+          "value": "$(AZURE_STORAGE_CONNECTION_STRING)",
           "slotSetting": true
          },
          {
           "name": "SPRING_PROFILES_ACTIVE",
-          "value": "$APP_CONFIG_IMAGE_SECURITY_ID",
+          "value": "$(APP_CONFIG_IMAGE_SECURITY_ID)",
           "slotSetting": true
          },
          {
           "name": "APP_CONFIG_IMAGE_SECURITY_ID",
-          "value": "$APP_CONFIG_IMAGE_SECURITY_ID",
+          "value": "$(APP_CONFIG_IMAGE_SECURITY_ID)",
           "slotSetting": true
          },
          {
           "name": "APP_CONFIG_IMAGE_SECURITY_SECRET_KEY",
-          "value": "$APP_CONFIG_IMAGE_SECURITY_SECRET_KEY",
+          "value": "$(APP_CONFIG_IMAGE_SECURITY_SECRET_KEY)",
           "slotSetting": true
          },
          {
           "name": "WEBSITES_PORT",
-          "value": "$WEBSITES_PORT",
+          "value": "$(WEBSITES_PORT)",
           "slotSetting": true
          }
       ]
