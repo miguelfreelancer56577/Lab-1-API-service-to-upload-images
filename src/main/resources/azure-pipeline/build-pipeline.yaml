@@ -51,7 +51,7 @@ steps:
 - task: Bash@3
   inputs:
     targetType: 'filePath'
-    filePath: '$(System.DefaultWorkingDirectory)/target/web-app-cleanup.sh'
+    filePath: '$(System.DefaultWorkingDirectory)/target/web-app-setup.sh'
     workingDirectory: '$(System.DefaultWorkingDirectory)/target/'
     failOnStderr: true
   displayName: 'CreationWebApp'
