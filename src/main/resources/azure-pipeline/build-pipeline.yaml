@@ -53,7 +53,7 @@ steps:
     targetType: 'filePath'
     filePath: '$(System.DefaultWorkingDirectory)/target/web-app-setup.sh'
     workingDirectory: '$(System.DefaultWorkingDirectory)/target/'
-    failOnStderr: true
+    failOnStderr: false
   displayName: 'CreationWebApp'
 
 - task: AzureAppServiceSettings@1
