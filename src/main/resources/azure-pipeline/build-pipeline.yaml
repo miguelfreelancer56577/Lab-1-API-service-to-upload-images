@@ -62,7 +62,7 @@ steps:
 
 - task: AzureAppServiceSettings@1
   inputs:
-    azureSubscription: 'Suscripción de Azure 1 (d19f674d-e7be-4536-a190-7b50b24cd379)'
+    azureSubscription: 'arm-connection'
     appName: 'mtr-$(AZ_ENV)-web-app'
     resourceGroupName: 'mtr-$(AZ_ENV)-grp'
     appSettings: |
